@@ -6,7 +6,36 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B51C0A732F48A7290004F4AE /* Fight.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A722F48A7290004F4AE /* Fight.swift */; };
+		B51C0A752F48A72B0004F4AE /* FriendGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A742F48A72B0004F4AE /* FriendGroup.swift */; };
+		B51C0A772F48A72D0004F4AE /* Scorecard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A762F48A72D0004F4AE /* Scorecard.swift */; };
+		B51C0A792F48A72E0004F4AE /* RoundScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A782F48A72E0004F4AE /* RoundScore.swift */; };
+		B51C0A7B2F48A7300004F4AE /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A7A2F48A7300004F4AE /* RootView.swift */; };
+		B51C0A7D2F48A8710004F4AE /* FightListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A7C2F48A8710004F4AE /* FightListView.swift */; };
+		B51C0A7F2F48A8770004F4AE /* FightDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A7E2F48A8770004F4AE /* FightDetailView.swift */; };
+		B51C0A812F48A87D0004F4AE /* ScorecardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A802F48A87D0004F4AE /* ScorecardView.swift */; };
+		B51C0A832F48A91C0004F4AE /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A822F48A91C0004F4AE /* User.swift */; };
+		B51C0A852F48A9D30004F4AE /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B51C0A842F48A9D30004F4AE /* README.md */; };
+		B51C0A872F48AA420004F4AE /* UsersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A862F48AA420004F4AE /* UsersListView.swift */; };
+		B51C0A892F48AAF90004F4AE /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A882F48AAF90004F4AE /* AuthManager.swift */; };
+		B51C0A8B2F48AB030004F4AE /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A8A2F48AB030004F4AE /* SignInView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		B51C0A722F48A7290004F4AE /* Fight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fight.swift; sourceTree = "<group>"; };
+		B51C0A742F48A72B0004F4AE /* FriendGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendGroup.swift; sourceTree = "<group>"; };
+		B51C0A762F48A72D0004F4AE /* Scorecard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scorecard.swift; sourceTree = "<group>"; };
+		B51C0A782F48A72E0004F4AE /* RoundScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundScore.swift; sourceTree = "<group>"; };
+		B51C0A7A2F48A7300004F4AE /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		B51C0A7C2F48A8710004F4AE /* FightListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FightListView.swift; sourceTree = "<group>"; };
+		B51C0A7E2F48A8770004F4AE /* FightDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FightDetailView.swift; sourceTree = "<group>"; };
+		B51C0A802F48A87D0004F4AE /* ScorecardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScorecardView.swift; sourceTree = "<group>"; };
+		B51C0A822F48A91C0004F4AE /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		B51C0A842F48A9D30004F4AE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		B51C0A862F48AA420004F4AE /* UsersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersListView.swift; sourceTree = "<group>"; };
+		B51C0A882F48AAF90004F4AE /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		B51C0A8A2F48AB030004F4AE /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		B5320E642F47ACBC00C2B16F /* r2rscorecards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = r2rscorecards.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -47,6 +76,19 @@
 			children = (
 				B5320E662F47ACBC00C2B16F /* r2rscorecards */,
 				B5320E652F47ACBC00C2B16F /* Products */,
+				B51C0A722F48A7290004F4AE /* Fight.swift */,
+				B51C0A742F48A72B0004F4AE /* FriendGroup.swift */,
+				B51C0A762F48A72D0004F4AE /* Scorecard.swift */,
+				B51C0A782F48A72E0004F4AE /* RoundScore.swift */,
+				B51C0A7A2F48A7300004F4AE /* RootView.swift */,
+				B51C0A7C2F48A8710004F4AE /* FightListView.swift */,
+				B51C0A7E2F48A8770004F4AE /* FightDetailView.swift */,
+				B51C0A802F48A87D0004F4AE /* ScorecardView.swift */,
+				B51C0A822F48A91C0004F4AE /* User.swift */,
+				B51C0A842F48A9D30004F4AE /* README.md */,
+				B51C0A862F48AA420004F4AE /* UsersListView.swift */,
+				B51C0A882F48AAF90004F4AE /* AuthManager.swift */,
+				B51C0A8A2F48AB030004F4AE /* SignInView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -122,6 +164,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B51C0A852F48A9D30004F4AE /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -132,6 +175,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B51C0A7F2F48A8770004F4AE /* FightDetailView.swift in Sources */,
+				B51C0A892F48AAF90004F4AE /* AuthManager.swift in Sources */,
+				B51C0A872F48AA420004F4AE /* UsersListView.swift in Sources */,
+				B51C0A812F48A87D0004F4AE /* ScorecardView.swift in Sources */,
+				B51C0A7D2F48A8710004F4AE /* FightListView.swift in Sources */,
+				B51C0A7B2F48A7300004F4AE /* RootView.swift in Sources */,
+				B51C0A772F48A72D0004F4AE /* Scorecard.swift in Sources */,
+				B51C0A732F48A7290004F4AE /* Fight.swift in Sources */,
+				B51C0A792F48A72E0004F4AE /* RoundScore.swift in Sources */,
+				B51C0A8B2F48AB030004F4AE /* SignInView.swift in Sources */,
+				B51C0A832F48A91C0004F4AE /* User.swift in Sources */,
+				B51C0A752F48A72B0004F4AE /* FriendGroup.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
