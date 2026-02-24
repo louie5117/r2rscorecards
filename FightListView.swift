@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftUI
 import SwiftData
 
 struct FightListView: View {
@@ -8,6 +9,9 @@ struct FightListView: View {
     @EnvironmentObject private var auth: AuthManager
     @EnvironmentObject private var syncStatus: SyncStatus
     @State private var showSignIn = false
+    @State private var showError = false
+    @State private var errorMessage = ""
+    @State private var showImportFights = false
 
     init() {}
 
@@ -30,15 +34,32 @@ struct FightListView: View {
                         .font(.footnote)
                         .foregroundStyle(.red)
                 }
+                #if DEBUG
+                if auth.isDevBypass {
+                    HStack {
+                        Image(systemName: "hammer.fill")
+                            .foregroundStyle(.orange)
+                        Text("Development Bypass Active")
+                            .font(.footnote)
+                            .foregroundStyle(.orange)
+                    }
+                }
+                #endif
             }
             Section("Upcoming") {
                 ForEach(fights.filter { $0.statusRaw == "upcoming" || $0.statusRaw == "inProgress" }) { fight in
                     NavigationLink(value: fight) {
                         VStack(alignment: .leading) {
                             Text(fight.title).font(.headline)
-                            Text("\(fight.date, format: .dateTime) • Rounds: \(fight.scheduledRounds)")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                            if let date = fight.date {
+                                Text("\(date, format: .dateTime) • Rounds: \(fight.scheduledRounds)")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                Text("Rounds: \(fight.scheduledRounds)")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
                 }
@@ -48,9 +69,15 @@ struct FightListView: View {
                     NavigationLink(value: fight) {
                         VStack(alignment: .leading) {
                             Text(fight.title).font(.headline)
-                            Text("\(fight.date, format: .dateTime) • Rounds: \(fight.scheduledRounds)")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                            if let date = fight.date {
+                                Text("\(date, format: .dateTime) • Rounds: \(fight.scheduledRounds)")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                Text("Rounds: \(fight.scheduledRounds)")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
                 }
@@ -73,6 +100,13 @@ struct FightListView: View {
             ToolbarItem(placement: .topBarLeading) {
                 NavigationLink(destination: MyScorecardsView()) { Label("My Cards", systemImage: "checklist") }
             }
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    showImportFights = true
+                } label: {
+                    Label("Import Fights", systemImage: "square.and.arrow.down")
+                }
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button { addSampleFight() } label: { Label("Add Fight", systemImage: "plus") }
             }
@@ -82,7 +116,16 @@ struct FightListView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button { showSignIn = true } label: {
                     if let name = auth.displayName, !name.isEmpty {
-                        Label(name, systemImage: "person.crop.circle")
+                        HStack(spacing: 4) {
+                            #if DEBUG
+                            if auth.isDevBypass {
+                                Image(systemName: "hammer.fill")
+                                    .font(.caption)
+                                    .foregroundStyle(.orange)
+                            }
+                            #endif
+                            Label(name, systemImage: "person.crop.circle")
+                        }
                     } else {
                         Label("Profile", systemImage: "person.crop.circle")
                     }
@@ -93,12 +136,25 @@ struct FightListView: View {
             NavigationStack { SignInView(isPresented: $showSignIn) }
                 .environmentObject(auth)
         }
+        .sheet(isPresented: $showImportFights) {
+            ImportFightsView()
+        }
+        .alert("Error", isPresented: $showError) {
+            Button("OK") { }
+        } message: {
+            Text(errorMessage)
+        }
     }
 
     private func addSampleFight() {
         let fight = Fight(title: "Sample Fight", date: .now.addingTimeInterval(86400), scheduledRounds: 12, statusRaw: "upcoming")
         context.insert(fight)
-        do { try context.save() } catch { print("Failed to save: \(error)") }
+        do {
+            try context.save()
+        } catch {
+            errorMessage = "Failed to save fight: \(error.localizedDescription)"
+            showError = true
+        }
     }
 
 #if DEBUG
@@ -107,41 +163,64 @@ struct FightListView: View {
         let allFights = fights
         for f in allFights { context.delete(f) }
         // Also fetch and delete users, scorecards, and rounds
-        let descriptor = FetchDescriptor<User>()
-        if let fetchedUsers = try? context.fetch(descriptor) {
-            for u in fetchedUsers { context.delete(u) }
+        do {
+            let users = try context.fetch(FetchDescriptor<User>())
+            for u in users { context.delete(u) }
+            
+            let scorecards = try context.fetch(FetchDescriptor<Scorecard>())
+            for sc in scorecards { context.delete(sc) }
+            
+            let rounds = try context.fetch(FetchDescriptor<RoundScore>())
+            for rs in rounds { context.delete(rs) }
+            
+            let groups = try context.fetch(FetchDescriptor<FriendGroup>())
+            for g in groups { context.delete(g) }
+            
+            try context.save()
+        } catch {
+            errorMessage = "Reset error: \(error.localizedDescription)"
+            showError = true
         }
-        let scDesc = FetchDescriptor<Scorecard>()
-        if let fetchedSCs = try? context.fetch(scDesc) {
-            for sc in fetchedSCs { context.delete(sc) }
-        }
-        let rsDesc = FetchDescriptor<RoundScore>()
-        if let fetchedRS = try? context.fetch(rsDesc) {
-            for rs in fetchedRS { context.delete(rs) }
-        }
-        do { try context.save() } catch { print("Reset error: \(error)") }
     }
 
     private func seedSampleData() {
-        // Create users
-        let alice = User(displayName: "Alice", region: "US", gender: "female", ageGroup: "25-34")
-        let bob = User(displayName: "Bob", region: "UK", gender: "male", ageGroup: "35-44")
-        context.insert(alice); context.insert(bob)
-        // Create a fight
-        let fight = Fight(title: "Championship Bout", date: .now.addingTimeInterval(3600*24), scheduledRounds: 12, statusRaw: "upcoming")
-        context.insert(fight)
-        // Create scorecards and rounds
-        let aliceCard = Scorecard(title: "Alice Card", user: alice, fight: fight)
-        let bobCard = Scorecard(title: "Bob Card", user: bob, fight: fight)
-        context.insert(aliceCard); context.insert(bobCard)
-        for r in 1...fight.scheduledRounds {
-            let a = RoundScore(round: r, redScore: Int.random(in: 8...10), blueScore: Int.random(in: 8...10), fight: fight, scorecard: aliceCard)
-            let b = RoundScore(round: r, redScore: Int.random(in: 8...10), blueScore: Int.random(in: 8...10), fight: fight, scorecard: bobCard)
-            context.insert(a); context.insert(b)
-            aliceCard.rounds.append(a); bobCard.rounds.append(b)
-            fight.rounds.append(a); fight.rounds.append(b)
+        do {
+            // Create users
+            let alice = User(displayName: "Alice", region: "US", gender: "female", ageGroup: "25-34")
+            let bob = User(displayName: "Bob", region: "UK", gender: "male", ageGroup: "35-44")
+            context.insert(alice); context.insert(bob)
+            
+            // Create a fight
+            let fight = Fight(title: "Championship Bout", date: .now.addingTimeInterval(3600*24), scheduledRounds: 12, statusRaw: "upcoming")
+            context.insert(fight)
+            
+            // Create a friend group
+            let group = FriendGroup(name: "Test Group", fight: fight, members: [alice, bob])
+            context.insert(group)
+            if fight.friendGroups == nil { fight.friendGroups = [] }
+            fight.friendGroups?.append(group)
+            
+            // Create scorecards and rounds
+            let aliceCard = Scorecard(title: "Alice Card", user: alice, fight: fight, group: group)
+            let bobCard = Scorecard(title: "Bob Card", user: bob, fight: fight, group: group)
+            context.insert(aliceCard); context.insert(bobCard)
+            
+            for r in 1...fight.scheduledRounds {
+                let a = RoundScore(round: r, redScore: Int.random(in: 8...10), blueScore: Int.random(in: 8...10), fight: fight, scorecard: aliceCard)
+                let b = RoundScore(round: r, redScore: Int.random(in: 8...10), blueScore: Int.random(in: 8...10), fight: fight, scorecard: bobCard)
+                context.insert(a); context.insert(b)
+                if aliceCard.rounds == nil { aliceCard.rounds = [] }
+                if bobCard.rounds == nil { bobCard.rounds = [] }
+                if fight.rounds == nil { fight.rounds = [] }
+                aliceCard.rounds?.append(a); bobCard.rounds?.append(b)
+                fight.rounds?.append(a); fight.rounds?.append(b)
+            }
+            
+            try context.save()
+        } catch {
+            errorMessage = "Seed error: \(error.localizedDescription)"
+            showError = true
         }
-        do { try context.save() } catch { print("Seed error: \(error)") }
     }
 #endif
 }
@@ -194,7 +273,9 @@ private struct MyScorecardsView: View {
                             .foregroundStyle(.secondary)
                     } else {
                         ForEach(submitted) { card in
-                            NavigationLink(destination: ScorecardView(scorecard: card)) {
+                            NavigationLink {
+                                ScorecardView(scorecard: card)
+                            } label: {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(card.fight?.title ?? "Unknown Fight")
                                         .font(.headline)
@@ -217,11 +298,13 @@ private struct MyScorecardsView: View {
                             .foregroundStyle(.secondary)
                     } else {
                         ForEach(drafts) { card in
-                            NavigationLink(destination: ScorecardView(scorecard: card)) {
+                            NavigationLink {
+                                ScorecardView(scorecard: card)
+                            } label: {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(card.fight?.title ?? "Unknown Fight")
                                         .font(.headline)
-                                    Text("Draft: R \(card.computedRedTotal) – B \(card.computedBlueTotal)")
+                                    Text("Draft: R \(card.totalRed) – B \(card.totalBlue)")
                                         .foregroundStyle(.secondary)
                                 }
                             }

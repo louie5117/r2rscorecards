@@ -1,10 +1,10 @@
 import SwiftUI
+import SwiftUI
 import SwiftData
 
 struct FightDetailView: View {
     @Environment(\.modelContext) private var context
     @EnvironmentObject private var auth: AuthManager
-    @State private var path: [Scorecard] = []
 
     @Bindable var fight: Fight
 
@@ -20,6 +20,9 @@ struct FightDetailView: View {
     @State private var newGroupName: String = ""
 
     @State private var showSignIn = false
+    @State private var showError = false
+    @State private var errorMessage = ""
+    @State private var navigateToScorecard: Scorecard?
 
     enum Grouping: String, CaseIterable, Identifiable { case overall, region, gender, ageGroup; var id: String { rawValue } }
     @State private var grouping: Grouping = .overall
@@ -30,11 +33,36 @@ struct FightDetailView: View {
                 HStack {
                     Text("Signed in as")
                     Spacer()
-                    Text(auth.displayName ?? "Not signed in").foregroundStyle(.secondary)
+                    if let displayName = auth.displayName {
+                        VStack(alignment: .trailing) {
+                            Text(displayName)
+                                .foregroundStyle(.primary)
+                            #if DEBUG
+                            if auth.isDevBypass {
+                                Text("(Dev Mode)")
+                                    .font(.caption)
+                                    .foregroundStyle(.orange)
+                            }
+                            #endif
+                        }
+                    } else {
+                        Text("Not signed in")
+                            .foregroundStyle(.secondary)
+                    }
                 }
+                
+                if selectedUser == nil && auth.currentUserIdentifier != nil {
+                    HStack {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                        Text("User profile not found. Try signing out and back in.")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                    }
+                }
+                
                 Button(role: .destructive) {
-                    auth.currentUserIdentifier = nil
-                    auth.displayName = nil
+                    auth.signOut()
                     selectedUser = nil
                     selectedGroup = nil
                 } label: {
@@ -45,7 +73,10 @@ struct FightDetailView: View {
 
             Section("Details") {
                 TextField("Title", text: $fight.title)
-                DatePicker("Date", selection: $fight.date)
+                DatePicker("Date", selection: Binding(
+                    get: { fight.date ?? .now },
+                    set: { fight.date = $0 }
+                ))
                 Stepper("Scheduled Rounds: \(fight.scheduledRounds)", value: $fight.scheduledRounds, in: 1...15)
                 Picker("Status", selection: $fight.statusRaw) {
                     Text("Upcoming").tag("upcoming")
@@ -78,12 +109,12 @@ struct FightDetailView: View {
                     }
                 }
 
-                ForEach(fight.scorecards) { card in
+                ForEach(fight.scorecards ?? []) { card in
                     NavigationLink(value: card) {
                         HStack {
                             Text(card.title)
                             Spacer()
-                            Text("R \(card.computedRedTotal) – B \(card.computedBlueTotal)")
+                            Text("R \(card.totalRed) – B \(card.totalBlue)")
                                 .foregroundStyle(.secondary)
                         }
                     }
@@ -178,6 +209,9 @@ struct FightDetailView: View {
         .navigationDestination(for: Scorecard.self) { card in
             ScorecardView(scorecard: card)
         }
+        .navigationDestination(item: $navigateToScorecard) { card in
+            ScorecardView(scorecard: card)
+        }
         .navigationTitle(fight.title)
         .sheet(isPresented: $showSignIn) {
             NavigationStack {
@@ -187,46 +221,73 @@ struct FightDetailView: View {
             }
         }
         .onAppear { syncSignedInUser() }
+        .onChange(of: auth.currentUserIdentifier) { oldValue, newValue in
+            syncSignedInUser()
+        }
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                NavigationLink(destination: UsersListView()) { Label("Users", systemImage: "person.3") }
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    UsersListView()
+                } label: {
+                    Label("Users", systemImage: "person.3")
+                }
             }
+        }
+        .alert("Error", isPresented: $showError) {
+            Button("OK") { }
+        } message: {
+            Text(errorMessage)
         }
     }
 
     private func startOrContinueScoring() {
         guard let user = selectedUser, let group = selectedGroup else { return }
-        if let existing = fight.scorecards.first(where: { $0.user?.id == user.id && $0.group?.id == group.id }) {
-            navigate(to: existing)
+        
+        // Check if scorecard already exists - if so, navigate to it
+        if let existingCard = (fight.scorecards ?? []).first(where: { $0.user?.id == user.id && $0.group?.id == group.id }) {
+            navigateToScorecard = existingCard
             return
         }
-        let card = Scorecard(title: "Scorecard (\(user.displayName))", totalRed: 0, totalBlue: 0, user: user, fight: fight, group: group)
+        
+        // Create new scorecard with valid default scores (10-10 for all rounds)
+        let card = Scorecard(title: "Scorecard (\(user.displayName))", user: user, fight: fight, group: group)
         for r in 1...fight.scheduledRounds {
-            let rs = RoundScore(round: r, redScore: 0, blueScore: 0, fight: fight, scorecard: card)
+            // Initialize with 10-10 (valid even round score) instead of 0-0
+            let rs = RoundScore(round: r, redScore: 10, blueScore: 10, fight: fight, scorecard: card)
             context.insert(rs)
-            card.rounds.append(rs)
-            fight.rounds.append(rs)
+            if card.rounds == nil { card.rounds = [] }
+            card.rounds?.append(rs)
+            if fight.rounds == nil { fight.rounds = [] }
+            fight.rounds?.append(rs)
         }
         context.insert(card)
-        do { try context.save() } catch { print("Save error: \(error)") }
-        navigate(to: card)
+        do {
+            try context.save()
+            // Navigate to the new scorecard
+            navigateToScorecard = card
+        } catch {
+            errorMessage = "Failed to create scorecard: \(error.localizedDescription)"
+            showError = true
+        }
     }
 
     private func deleteScorecards(at offsets: IndexSet) {
-        for index in offsets { context.delete(fight.scorecards[index]) }
-        do { try context.save() } catch { print("Delete error: \(error)") }
-    }
-
-    private func navigate(to card: Scorecard) {
-        path.append(card)
+        let scorecards = fight.scorecards ?? []
+        for index in offsets { context.delete(scorecards[index]) }
+        do {
+            try context.save()
+        } catch {
+            errorMessage = "Failed to delete scorecard: \(error.localizedDescription)"
+            showError = true
+        }
     }
 
     private func crowdTotals() -> (avgRed: Int, avgBlue: Int, count: Int) {
-        let cards = fight.scorecards
+        let cards = fight.scorecards ?? []
         let count = cards.count
         guard count > 0 else { return (0, 0, 0) }
-        let sumRed = cards.reduce(0) { $0 + $1.computedRedTotal }
-        let sumBlue = cards.reduce(0) { $0 + $1.computedBlueTotal }
+        let sumRed = cards.reduce(0) { $0 + $1.totalRed }
+        let sumBlue = cards.reduce(0) { $0 + $1.totalBlue }
         let avgRed = Int(round(Double(sumRed) / Double(count)))
         let avgBlue = Int(round(Double(sumBlue) / Double(count)))
         return (avgRed, avgBlue, count)
@@ -241,22 +302,57 @@ struct FightDetailView: View {
     }
 
     private func syncSignedInUser() {
-        guard let authID = auth.currentUserIdentifier else { return }
-        if let user = users.first(where: { $0.authUserID == authID }) {
+        guard let authID = auth.currentUserIdentifier else {
+            selectedUser = nil
+            return
+        }
+        
+        // Try to find existing user in the query results first
+        // Check both authUserID and UUID string (for email auth)
+        if let user = users.first(where: { 
+            $0.authUserID == authID || $0.id.uuidString == authID
+        }) {
             selectedUser = user
+            return
+        }
+        
+        // If not found, try to fetch again (in case it was just created)
+        do {
+            let descriptor = FetchDescriptor<User>()
+            let allUsers = try context.fetch(descriptor)
+            if let user = allUsers.first(where: { 
+                $0.authUserID == authID || $0.id.uuidString == authID
+            }) {
+                selectedUser = user
+                print("✅ Found user via manual fetch: \(user.displayName)")
+            } else {
+                print("❌ User not found with authID: \(authID)")
+            }
+        } catch {
+            print("❌ Error fetching user: \(error)")
         }
     }
 
     private func joinGroupByCode() {
         guard let user = selectedUser else { return }
         let code = groupInviteCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        guard let group = groupsForFight.first(where: { $0.inviteCode.uppercased() == code }) else { return }
-        if !group.members.contains(where: { $0.id == user.id }) {
-            group.members.append(user)
+        guard let group = groupsForFight.first(where: { $0.inviteCode.uppercased() == code }) else {
+            errorMessage = "No group found with invite code '\(code)'"
+            showError = true
+            return
+        }
+        if !(group.members ?? []).contains(where: { $0.id == user.id }) {
+            if group.members == nil { group.members = [] }
+            group.members?.append(user)
         }
         selectedGroup = group
         groupInviteCode = ""
-        do { try context.save() } catch { print("Join group save error: \(error)") }
+        do {
+            try context.save()
+        } catch {
+            errorMessage = "Failed to join group: \(error.localizedDescription)"
+            showError = true
+        }
     }
 
     private func createGroup() {
@@ -269,14 +365,20 @@ struct FightDetailView: View {
         }
         let group = FriendGroup(name: trimmed, inviteCode: inviteCode, fight: fight, members: [user])
         context.insert(group)
-        fight.friendGroups.append(group)
+        if fight.friendGroups == nil { fight.friendGroups = [] }
+        fight.friendGroups?.append(group)
         selectedGroup = group
         newGroupName = ""
-        do { try context.save() } catch { print("Create group save error: \(error)") }
+        do {
+            try context.save()
+        } catch {
+            errorMessage = "Failed to create group: \(error.localizedDescription)"
+            showError = true
+        }
     }
 
     private func demographicAverages() -> [String: (red: Int, blue: Int, count: Int)] {
-        let cards = fight.scorecards
+        let cards = fight.scorecards ?? []
         guard !cards.isEmpty else { return [:] }
         func key(for card: Scorecard) -> String {
             guard let u = card.user else { return "" }
@@ -291,8 +393,8 @@ struct FightDetailView: View {
         for c in cards {
             let k = key(for: c)
             var b = buckets[k] ?? (0, 0, 0)
-            b.sumR += c.computedRedTotal
-            b.sumB += c.computedBlueTotal
+            b.sumR += c.totalRed
+            b.sumB += c.totalBlue
             b.n += 1
             buckets[k] = b
         }
@@ -307,8 +409,8 @@ struct FightDetailView: View {
 
     private func perRoundAverages() -> [Int: (red: Int, blue: Int, count: Int)] {
         var buckets: [Int: (sumR: Int, sumB: Int, n: Int)] = [:]
-        for c in fight.scorecards {
-            for rs in c.rounds {
+        for c in (fight.scorecards ?? []) {
+            for rs in (c.rounds ?? []) {
                 var b = buckets[rs.round] ?? (0,0,0)
                 b.sumR += rs.redScore
                 b.sumB += rs.blueScore
@@ -407,11 +509,11 @@ private struct GroupResultsView: View {
     }
 
     private var groupsForFight: [FriendGroup] {
-        fight.friendGroups.sorted { $0.name < $1.name }
+        (fight.friendGroups ?? []).sorted { $0.name < $1.name }
     }
 
     private var filteredSubmittedCards: [Scorecard] {
-        let submitted = fight.scorecards.filter { $0.isSubmitted }
+        let submitted = (fight.scorecards ?? []).filter { $0.isSubmitted }
         let filtered: [Scorecard]
         if let selectedGroup {
             filtered = submitted.filter { $0.group?.id == selectedGroup.id }
@@ -431,7 +533,7 @@ private struct GroupResultsView: View {
     private func perRoundAverages(for cards: [Scorecard]) -> [(round: Int, red: Int, blue: Int, count: Int)] {
         var buckets: [Int: (sumRed: Int, sumBlue: Int, count: Int)] = [:]
         for card in cards {
-            for round in card.rounds {
+            for round in (card.rounds ?? []) {
                 var bucket = buckets[round.round] ?? (0, 0, 0)
                 bucket.sumRed += round.redScore
                 bucket.sumBlue += round.blueScore
@@ -470,7 +572,8 @@ private enum FightDetailPreviewData {
         context.insert(user)
         let group = FriendGroup(name: "Friends", fight: fight, members: [user])
         context.insert(group)
-        fight.friendGroups.append(group)
+        if fight.friendGroups == nil { fight.friendGroups = [] }
+        fight.friendGroups?.append(group)
         let auth = AuthManager()
         auth.currentUserIdentifier = user.authUserID
         auth.displayName = user.displayName
@@ -479,8 +582,17 @@ private enum FightDetailPreviewData {
 }
 
 #Preview {
+    FightDetailPreview()
+}
+
+private struct FightDetailPreview: View {
     let previewData = FightDetailPreviewData.containerFightAndAuth
-    NavigationStack { FightDetailView(fight: previewData.1) }
+    
+    var body: some View {
+        NavigationStack { 
+            FightDetailView(fight: previewData.1) 
+        }
         .environmentObject(previewData.2)
         .modelContainer(previewData.0)
+    }
 }

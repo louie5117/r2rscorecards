@@ -11,6 +11,8 @@ struct UsersListView: View {
     @State private var region: String = ""
     @State private var gender: Gender = .unspecified
     @State private var ageGroup: AgeGroup? = nil
+    @State private var showError = false
+    @State private var errorMessage = ""
 
     var body: some View {
         Form {
@@ -38,18 +40,33 @@ struct UsersListView: View {
             }
         }
         .navigationTitle("Users")
+        .alert("Error", isPresented: $showError) {
+            Button("OK") { }
+        } message: {
+            Text(errorMessage)
+        }
     }
 
     private func addUser() {
         let user = User(displayName: name, region: region, gender: gender.rawValue, ageGroup: ageGroup?.rawValue ?? "")
         context.insert(user)
-        do { try context.save() } catch { print("Save user error: \(error)") }
-        name = ""; region = ""; gender = .unspecified; ageGroup = nil
+        do {
+            try context.save()
+            name = ""; region = ""; gender = .unspecified; ageGroup = nil
+        } catch {
+            errorMessage = "Failed to save user: \(error.localizedDescription)"
+            showError = true
+        }
     }
 
     private func deleteUsers(at offsets: IndexSet) {
         for index in offsets { context.delete(users[index]) }
-        do { try context.save() } catch { print("Delete error: \(error)") }
+        do {
+            try context.save()
+        } catch {
+            errorMessage = "Failed to delete user: \(error.localizedDescription)"
+            showError = true
+        }
     }
 }
 
