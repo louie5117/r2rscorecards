@@ -1,19 +1,35 @@
 import Foundation
 import SwiftData
 
+/// Represents a user profile with optional demographic information
+/// Links to Sign in with Apple via authUserID
 @Model
 final class User {
-    var id: UUID
+    var id: UUID = UUID()
+    /// Apple Sign In user identifier (app-scoped)
     var authUserID: String?
-    var displayName: String
-    var region: String // e.g., ISO country/region code or freeform
-    var gender: String // e.g., "male", "female", "nonbinary", "unspecified"
-    var ageGroup: String // e.g., "18-24", "25-34", etc.
+    var displayName: String = ""
+    /// ISO country/region code or freeform text
+    var region: String = ""
+    /// Gender identity (see Gender enum)
+    var gender: String = "unspecified"
+    /// Age range (see AgeGroup enum)
+    var ageGroup: String = ""
+    
+    // Email/Password authentication fields
+    /// User's email address (for email/password auth)
+    var email: String?
+    /// Hashed password (for email/password auth)
+    var passwordHash: String?
 
-    // Inverse relationship from Scorecard.user
-    var scorecards: [Scorecard]
+    // Relationships
+    /// All scorecards created by this user
+    @Relationship(deleteRule: .nullify, inverse: \Scorecard.user)
+    var scorecards: [Scorecard]? = []
+    
+    /// Friend groups this user belongs to
     @Relationship(inverse: \FriendGroup.members)
-    var friendGroups: [FriendGroup]
+    var friendGroups: [FriendGroup]? = []
 
     init(id: UUID = UUID(), authUserID: String? = nil, displayName: String, region: String, gender: String, ageGroup: String, scorecards: [Scorecard] = [], friendGroups: [FriendGroup] = []) {
         self.id = id

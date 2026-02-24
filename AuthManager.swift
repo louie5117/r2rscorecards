@@ -8,11 +8,17 @@ import UIKit
 final class AuthManager: NSObject, ObservableObject {
     @Published var currentUserIdentifier: String? // Apple ID credential user identifier
     @Published var displayName: String?
+    @Published var lastError: String?
+    @Published var isDevBypass: Bool = false // For development testing
 
     private var continuation: CheckedContinuation<(String, String?), Error>?
 
     func startSignIn() async throws -> (String, String?) {
-        try await withCheckedThrowingContinuation { (cont: CheckedContinuation<(String, String?), Error>) in
+        guard continuation == nil else {
+            throw NSError(domain: "Auth", code: -2, userInfo: [NSLocalizedDescriptionKey: "Sign-in already in progress"])
+        }
+        
+        return try await withCheckedThrowingContinuation { (cont: CheckedContinuation<(String, String?), Error>) in
             self.continuation = cont
             let request = ASAuthorizationAppleIDProvider().createRequest()
             request.requestedScopes = [.fullName, .email]
@@ -21,6 +27,32 @@ final class AuthManager: NSObject, ObservableObject {
             controller.presentationContextProvider = self
             controller.performRequests()
         }
+    }
+    
+    #if DEBUG
+    /// Development-only bypass for testing without Sign in with Apple
+    func devBypassSignIn(name: String = "Dev User") {
+        // Use a consistent dev user ID so we can reuse it
+        self.currentUserIdentifier = "dev-bypass-test-user"
+        self.displayName = name
+        self.isDevBypass = true
+        self.lastError = nil
+    }
+    #endif
+    
+    /// Sign in with email/password
+    func signInWithEmail(userID: String, displayName: String) {
+        self.currentUserIdentifier = userID
+        self.displayName = displayName
+        self.isDevBypass = false
+        self.lastError = nil
+    }
+    
+    func signOut() {
+        currentUserIdentifier = nil
+        displayName = nil
+        lastError = nil
+        isDevBypass = false
     }
 }
 
@@ -34,14 +66,18 @@ extension AuthManager: ASAuthorizationControllerDelegate {
                 .joined(separator: " ")
             self.currentUserIdentifier = userID
             self.displayName = name.isEmpty ? nil : name
+            self.lastError = nil
             continuation?.resume(returning: (userID, self.displayName))
         default:
-            continuation?.resume(throwing: NSError(domain: "Auth", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown credential"]))
+            let error = NSError(domain: "Auth", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown credential type"])
+            self.lastError = error.localizedDescription
+            continuation?.resume(throwing: error)
         }
         continuation = nil
     }
 
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        self.lastError = error.localizedDescription
         continuation?.resume(throwing: error)
         continuation = nil
     }

@@ -57,15 +57,26 @@ struct r2rscorecardsApp: App {
     let startupErrorMessage: String?
 
     init() {
+        print("🚀 r2rscorecardsApp init() starting...")
         let setup = Self.makeModelContainer()
+        print("📦 Container setup complete - mode: \(setup.mode), has container: \(setup.container != nil)")
+        
         if let container = setup.container {
             self.sharedModelContainer = container
             self.persistenceReady = true
+            print("✅ Using normal container, persistence ready")
         } else {
+            print("⚠️ No container created, using emergency container")
             self.sharedModelContainer = Self.makeEmergencyContainer()
             self.persistenceReady = false
+            print("❌ Persistence NOT ready")
         }
+        
         self.startupErrorMessage = setup.lastError
+        if let error = setup.lastError {
+            print("🔴 Startup error: \(error)")
+        }
+        
         _syncStatus = StateObject(
             wrappedValue: SyncStatus(
                 mode: setup.mode,
@@ -74,9 +85,11 @@ struct r2rscorecardsApp: App {
                 lastError: setup.lastError
             )
         )
+        print("🏁 r2rscorecardsApp init() complete")
     }
 
     private static func makeModelContainer() -> (container: ModelContainer?, mode: PersistenceSyncMode, detail: String, lastSyncAttempt: Date, lastError: String?) {
+        print("📋 Creating schema with 5 model types...")
         let schema = Schema([
             Fight.self,
             User.self,
@@ -84,23 +97,31 @@ struct r2rscorecardsApp: App {
             Scorecard.self,
             RoundScore.self,
         ])
+        print("✅ Schema created successfully")
         let attemptedAt = Date()
 
 #if targetEnvironment(simulator)
+        print("🔧 Running in SIMULATOR mode")
         do {
+            print("📝 Attempting simulator local storage configuration...")
             let simulatorConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
             let container = try ModelContainer(for: schema, configurations: [simulatorConfiguration])
             logger.info("SwiftData configured for simulator local storage.")
+            print("✅ Simulator local storage SUCCESS")
             return (container, .localFallback, "Simulator mode: using local device storage.", attemptedAt, nil)
         } catch {
             logger.error("Simulator local store failed: \(String(describing: error)). Falling back to in-memory mode.")
+            print("❌ Simulator local storage FAILED: \(error)")
+            print("🔄 Attempting in-memory fallback...")
             do {
                 let inMemoryConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
                 let container = try ModelContainer(for: schema, configurations: [inMemoryConfiguration])
+                print("⚠️ In-memory container created (data will NOT persist)")
                 return (container, .inMemoryRecovery, "Simulator recovery mode: temporary in-memory storage.", attemptedAt, String(describing: error))
             } catch {
                 let finalError = "Simulator local store error: \(error)"
                 logger.fault("Could not create simulator ModelContainer: \(finalError)")
+                print("💥 FATAL: Could not create ANY container: \(error)")
                 return (nil, .inMemoryRecovery, "Failed to open any data store. App is running without persistence.", attemptedAt, finalError)
             }
         }
@@ -142,8 +163,15 @@ struct r2rscorecardsApp: App {
 
     private static func makeEmergencyContainer() -> ModelContainer {
         do {
-            let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
-            return try ModelContainer(for: Item.self, configurations: configuration)
+            let schema = Schema([
+                Fight.self,
+                User.self,
+                FriendGroup.self,
+                Scorecard.self,
+                RoundScore.self,
+            ])
+            let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+            return try ModelContainer(for: schema, configurations: [configuration])
         } catch {
             fatalError("Emergency container creation failed: \(error)")
         }

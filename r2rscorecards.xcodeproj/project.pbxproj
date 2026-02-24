@@ -14,12 +14,29 @@
 		B51C0A7B2F48A7300004F4AE /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A7A2F48A7300004F4AE /* RootView.swift */; };
 		B51C0A7D2F48A8710004F4AE /* FightListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A7C2F48A8710004F4AE /* FightListView.swift */; };
 		B51C0A7F2F48A8770004F4AE /* FightDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A7E2F48A8770004F4AE /* FightDetailView.swift */; };
-		B51C0A812F48A87D0004F4AE /* ScorecardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A802F48A87D0004F4AE /* ScorecardView.swift */; };
 		B51C0A832F48A91C0004F4AE /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A822F48A91C0004F4AE /* User.swift */; };
 		B51C0A852F48A9D30004F4AE /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B51C0A842F48A9D30004F4AE /* README.md */; };
 		B51C0A872F48AA420004F4AE /* UsersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A862F48AA420004F4AE /* UsersListView.swift */; };
 		B51C0A892F48AAF90004F4AE /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A882F48AAF90004F4AE /* AuthManager.swift */; };
 		B51C0A8B2F48AB030004F4AE /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C0A8A2F48AB030004F4AE /* SignInView.swift */; };
+		B5A936252F4DD669002D8D27 /* BoxingRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A936242F4DD669002D8D27 /* BoxingRules.swift */; };
+		B5A936272F4DD695002D8D27 /* RoundScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A936262F4DD695002D8D27 /* RoundScoringView.swift */; };
+		B5A936292F4DD70F002D8D27 /* BOXING_RULES.md in Resources */ = {isa = PBXBuildFile; fileRef = B5A936282F4DD70F002D8D27 /* BOXING_RULES.md */; };
+		B5A9362B2F4E0EE4002D8D27 /* EmailAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A9362A2F4E0EE4002D8D27 /* EmailAuthView.swift */; };
+		B5A9362D2F4E0FD5002D8D27 /* TODO_PASSWORD_RESET.md in Resources */ = {isa = PBXBuildFile; fileRef = B5A9362C2F4E0FD5002D8D27 /* TODO_PASSWORD_RESET.md */; };
+		B5A9362F2F4E10DC002D8D27 /* GeographicData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A9362E2F4E10DC002D8D27 /* GeographicData.swift */; };
+		B5A936312F4E10F3002D8D27 /* GeographicPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A936302F4E10F3002D8D27 /* GeographicPicker.swift */; };
+		B5A936332F4E12F6002D8D27 /* BoxingAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A936322F4E12F6002D8D27 /* BoxingAPIService.swift */; };
+		B5A936352F4E130F002D8D27 /* ImportFightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A936342F4E130F002D8D27 /* ImportFightsView.swift */; };
+		B5A936372F4E1361002D8D27 /* BOXING_API_SETUP.md in Resources */ = {isa = PBXBuildFile; fileRef = B5A936362F4E1361002D8D27 /* BOXING_API_SETUP.md */; };
+		B5A936392F4E3ADF002D8D27 /* API_MIGRATION_SUMMARY.md in Resources */ = {isa = PBXBuildFile; fileRef = B5A936382F4E3ADF002D8D27 /* API_MIGRATION_SUMMARY.md */; };
+		B5A9363B2F4E3C04002D8D27 /* ESPN_API_MIGRATION.md in Resources */ = {isa = PBXBuildFile; fileRef = B5A9363A2F4E3C04002D8D27 /* ESPN_API_MIGRATION.md */; };
+		B5A9363D2F4E3E35002D8D27 /* GLOBAL_STATISTICS_ROADMAP.md in Resources */ = {isa = PBXBuildFile; fileRef = B5A9363C2F4E3E35002D8D27 /* GLOBAL_STATISTICS_ROADMAP.md */; };
+		B5A9363F2F4E3EF1002D8D27 /* BOXING_API_FINAL_STATUS.md in Resources */ = {isa = PBXBuildFile; fileRef = B5A9363E2F4E3EF1002D8D27 /* BOXING_API_FINAL_STATUS.md */; };
+		B5E5DF212F4D093500DE8E8F /* ScorecardView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E5DF202F4D093500DE8E8F /* ScorecardView 2.swift */; };
+		B5E5DF232F4D0A2E00DE8E8F /* CHANGES_APPLIED.md in Resources */ = {isa = PBXBuildFile; fileRef = B5E5DF222F4D0A2E00DE8E8F /* CHANGES_APPLIED.md */; };
+		B5E5DF252F4D0A3800DE8E8F /* AppErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E5DF242F4D0A3800DE8E8F /* AppErrors.swift */; };
+		B5E5DF272F4D0A7700DE8E8F /* DEVELOPER_GUIDE.md in Resources */ = {isa = PBXBuildFile; fileRef = B5E5DF262F4D0A7700DE8E8F /* DEVELOPER_GUIDE.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,13 +47,30 @@
 		B51C0A7A2F48A7300004F4AE /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		B51C0A7C2F48A8710004F4AE /* FightListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FightListView.swift; sourceTree = "<group>"; };
 		B51C0A7E2F48A8770004F4AE /* FightDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FightDetailView.swift; sourceTree = "<group>"; };
-		B51C0A802F48A87D0004F4AE /* ScorecardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScorecardView.swift; sourceTree = "<group>"; };
 		B51C0A822F48A91C0004F4AE /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		B51C0A842F48A9D30004F4AE /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B51C0A862F48AA420004F4AE /* UsersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersListView.swift; sourceTree = "<group>"; };
 		B51C0A882F48AAF90004F4AE /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		B51C0A8A2F48AB030004F4AE /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		B5320E642F47ACBC00C2B16F /* r2rscorecards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = r2rscorecards.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B5A936242F4DD669002D8D27 /* BoxingRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxingRules.swift; sourceTree = "<group>"; };
+		B5A936262F4DD695002D8D27 /* RoundScoringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundScoringView.swift; sourceTree = "<group>"; };
+		B5A936282F4DD70F002D8D27 /* BOXING_RULES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BOXING_RULES.md; sourceTree = "<group>"; };
+		B5A9362A2F4E0EE4002D8D27 /* EmailAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAuthView.swift; sourceTree = "<group>"; };
+		B5A9362C2F4E0FD5002D8D27 /* TODO_PASSWORD_RESET.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO_PASSWORD_RESET.md; sourceTree = "<group>"; };
+		B5A9362E2F4E10DC002D8D27 /* GeographicData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeographicData.swift; sourceTree = "<group>"; };
+		B5A936302F4E10F3002D8D27 /* GeographicPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeographicPicker.swift; sourceTree = "<group>"; };
+		B5A936322F4E12F6002D8D27 /* BoxingAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxingAPIService.swift; sourceTree = "<group>"; };
+		B5A936342F4E130F002D8D27 /* ImportFightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportFightsView.swift; sourceTree = "<group>"; };
+		B5A936362F4E1361002D8D27 /* BOXING_API_SETUP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BOXING_API_SETUP.md; sourceTree = "<group>"; };
+		B5A936382F4E3ADF002D8D27 /* API_MIGRATION_SUMMARY.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = API_MIGRATION_SUMMARY.md; sourceTree = "<group>"; };
+		B5A9363A2F4E3C04002D8D27 /* ESPN_API_MIGRATION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ESPN_API_MIGRATION.md; sourceTree = "<group>"; };
+		B5A9363C2F4E3E35002D8D27 /* GLOBAL_STATISTICS_ROADMAP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = GLOBAL_STATISTICS_ROADMAP.md; sourceTree = "<group>"; };
+		B5A9363E2F4E3EF1002D8D27 /* BOXING_API_FINAL_STATUS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BOXING_API_FINAL_STATUS.md; sourceTree = "<group>"; };
+		B5E5DF202F4D093500DE8E8F /* ScorecardView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScorecardView 2.swift"; sourceTree = "<group>"; };
+		B5E5DF222F4D0A2E00DE8E8F /* CHANGES_APPLIED.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGES_APPLIED.md; sourceTree = "<group>"; };
+		B5E5DF242F4D0A3800DE8E8F /* AppErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppErrors.swift; sourceTree = "<group>"; };
+		B5E5DF262F4D0A7700DE8E8F /* DEVELOPER_GUIDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = DEVELOPER_GUIDE.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -83,12 +117,29 @@
 				B51C0A7A2F48A7300004F4AE /* RootView.swift */,
 				B51C0A7C2F48A8710004F4AE /* FightListView.swift */,
 				B51C0A7E2F48A8770004F4AE /* FightDetailView.swift */,
-				B51C0A802F48A87D0004F4AE /* ScorecardView.swift */,
 				B51C0A822F48A91C0004F4AE /* User.swift */,
 				B51C0A842F48A9D30004F4AE /* README.md */,
 				B51C0A862F48AA420004F4AE /* UsersListView.swift */,
 				B51C0A882F48AAF90004F4AE /* AuthManager.swift */,
 				B51C0A8A2F48AB030004F4AE /* SignInView.swift */,
+				B5E5DF202F4D093500DE8E8F /* ScorecardView 2.swift */,
+				B5E5DF222F4D0A2E00DE8E8F /* CHANGES_APPLIED.md */,
+				B5E5DF242F4D0A3800DE8E8F /* AppErrors.swift */,
+				B5E5DF262F4D0A7700DE8E8F /* DEVELOPER_GUIDE.md */,
+				B5A936242F4DD669002D8D27 /* BoxingRules.swift */,
+				B5A936262F4DD695002D8D27 /* RoundScoringView.swift */,
+				B5A936282F4DD70F002D8D27 /* BOXING_RULES.md */,
+				B5A9362A2F4E0EE4002D8D27 /* EmailAuthView.swift */,
+				B5A9362C2F4E0FD5002D8D27 /* TODO_PASSWORD_RESET.md */,
+				B5A9362E2F4E10DC002D8D27 /* GeographicData.swift */,
+				B5A936302F4E10F3002D8D27 /* GeographicPicker.swift */,
+				B5A936322F4E12F6002D8D27 /* BoxingAPIService.swift */,
+				B5A936342F4E130F002D8D27 /* ImportFightsView.swift */,
+				B5A936362F4E1361002D8D27 /* BOXING_API_SETUP.md */,
+				B5A936382F4E3ADF002D8D27 /* API_MIGRATION_SUMMARY.md */,
+				B5A9363A2F4E3C04002D8D27 /* ESPN_API_MIGRATION.md */,
+				B5A9363C2F4E3E35002D8D27 /* GLOBAL_STATISTICS_ROADMAP.md */,
+				B5A9363E2F4E3EF1002D8D27 /* BOXING_API_FINAL_STATUS.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -164,7 +215,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5A9363B2F4E3C04002D8D27 /* ESPN_API_MIGRATION.md in Resources */,
+				B5A936372F4E1361002D8D27 /* BOXING_API_SETUP.md in Resources */,
+				B5E5DF272F4D0A7700DE8E8F /* DEVELOPER_GUIDE.md in Resources */,
+				B5A9362D2F4E0FD5002D8D27 /* TODO_PASSWORD_RESET.md in Resources */,
 				B51C0A852F48A9D30004F4AE /* README.md in Resources */,
+				B5A9363D2F4E3E35002D8D27 /* GLOBAL_STATISTICS_ROADMAP.md in Resources */,
+				B5A9363F2F4E3EF1002D8D27 /* BOXING_API_FINAL_STATUS.md in Resources */,
+				B5A936292F4DD70F002D8D27 /* BOXING_RULES.md in Resources */,
+				B5E5DF232F4D0A2E00DE8E8F /* CHANGES_APPLIED.md in Resources */,
+				B5A936392F4E3ADF002D8D27 /* API_MIGRATION_SUMMARY.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,14 +238,22 @@
 				B51C0A7F2F48A8770004F4AE /* FightDetailView.swift in Sources */,
 				B51C0A892F48AAF90004F4AE /* AuthManager.swift in Sources */,
 				B51C0A872F48AA420004F4AE /* UsersListView.swift in Sources */,
-				B51C0A812F48A87D0004F4AE /* ScorecardView.swift in Sources */,
+				B5A936312F4E10F3002D8D27 /* GeographicPicker.swift in Sources */,
+				B5E5DF212F4D093500DE8E8F /* ScorecardView 2.swift in Sources */,
+				B5A936352F4E130F002D8D27 /* ImportFightsView.swift in Sources */,
 				B51C0A7D2F48A8710004F4AE /* FightListView.swift in Sources */,
 				B51C0A7B2F48A7300004F4AE /* RootView.swift in Sources */,
+				B5A936252F4DD669002D8D27 /* BoxingRules.swift in Sources */,
 				B51C0A772F48A72D0004F4AE /* Scorecard.swift in Sources */,
+				B5A9362B2F4E0EE4002D8D27 /* EmailAuthView.swift in Sources */,
 				B51C0A732F48A7290004F4AE /* Fight.swift in Sources */,
+				B5A936272F4DD695002D8D27 /* RoundScoringView.swift in Sources */,
 				B51C0A792F48A72E0004F4AE /* RoundScore.swift in Sources */,
+				B5E5DF252F4D0A3800DE8E8F /* AppErrors.swift in Sources */,
+				B5A936332F4E12F6002D8D27 /* BoxingAPIService.swift in Sources */,
 				B51C0A8B2F48AB030004F4AE /* SignInView.swift in Sources */,
 				B51C0A832F48A91C0004F4AE /* User.swift in Sources */,
+				B5A9362F2F4E10DC002D8D27 /* GeographicData.swift in Sources */,
 				B51C0A752F48A72B0004F4AE /* FriendGroup.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
