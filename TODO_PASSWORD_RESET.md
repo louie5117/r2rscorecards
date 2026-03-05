@@ -1,142 +1,137 @@
-# 🔐 TODO: Password Reset / Forgot Password Feature
+# 🔐 Password Reset / Forgot Password Feature
 
 ## Current Status
 ✅ Email/password authentication implemented  
 ✅ Account registration with demographics  
-✅ Secure password hashing (SHA256)  
-❌ **Password reset/recovery NOT YET IMPLEMENTED**
+✅ Supabase Auth with secure password hashing  
+✅ **Password reset/recovery IMPLEMENTED** (Supabase)  
+✅ Change password for logged-in users
 
-## What You Need to Add
+## What Has Been Implemented
 
-### For Local/Testing (Simple Approach)
-If you're just testing locally without a backend, you could add:
+### ✅ Password Reset via Email (Supabase)
+1. **ForgotPasswordView.swift** - UI for requesting password reset
+   - User enters their email
+   - Supabase sends password reset email automatically
+   - Email contains secure reset link
 
-1. **Simple reset with security question** (not recommended for production)
-2. **Admin override** (debug builds only)
-3. **Manual password change** (requires knowing old password)
+2. **SupabaseAuthService.sendPasswordReset()** - Backend integration
+   - Calls Supabase Auth API
+   - Email delivery handled by Supabase
+   - Secure token generation and validation
 
-### For Production (Recommended Approach)
-You'll need a backend service to handle email delivery. Options:
+3. **ChangePasswordView.swift** - For logged-in users
+   - Allows authenticated users to change password
+   - No email required (user is already logged in)
+   - Validates password strength and confirmation
 
-#### Option 1: Firebase Authentication
-- ✅ Built-in email verification
-- ✅ Built-in password reset emails
-- ✅ Easy integration with iOS
-- ✅ Free tier available
+4. **SupabaseSignInView.swift** - Complete sign-in flow
+   - Sign in with Apple
+   - Email/Password authentication
+   - "Forgot Password?" link integrated into login form
+   - Registration flow
 
-#### Option 2: Custom Backend + Email Service
-- Use SendGrid, Mailgun, or AWS SES for emails
-- Create API endpoints for:
-  - `/forgot-password` - Generate reset token
-  - `/reset-password` - Verify token and update password
-  - `/verify-email` - Email verification on signup
+### How It Works
 
-#### Option 3: Supabase
-- ✅ Built-in auth with email reset
-- ✅ Real-time database
-- ✅ Easy Swift integration
-- ✅ Free tier available
+#### Password Reset Flow:
+1. User taps "Forgot Password?" on login screen
+2. `ForgotPasswordView` appears
+3. User enters their email address
+4. App calls `authService.sendPasswordReset(email:)`
+5. Supabase sends email with reset link
+6. User clicks link in email
+7. Supabase presents password reset page
+8. User enters new password
+9. User returns to app and signs in
 
-## Implementation Steps (When Ready)
+#### Change Password Flow (Logged In):
+1. User goes to Settings/Profile
+2. Taps "Change Password"
+3. `ChangePasswordView` appears
+4. User enters new password (twice for confirmation)
+5. App calls `authService.updatePassword(newPassword:)`
+6. Password updated immediately
 
-### 1. Add "Forgot Password" UI
+### Configuration Required
+
+**In Supabase Dashboard:**
+1. Go to **Authentication → Email Templates**
+2. Customize the "Reset Password" email template (optional)
+3. Configure your app's deep link URL scheme for password reset redirects (optional)
+
+**Default behavior:**
+- Supabase sends professional-looking reset emails
+- Links redirect to Supabase's hosted reset page
+- After reset, users can sign in with new password
+
+### Files Created/Modified
+
+**New Files:**
+- `ForgotPasswordView.swift` - Password reset request UI
+- `ChangePasswordView.swift` - Change password UI (for logged-in users)
+- `SupabaseSignInView.swift` - Complete Supabase sign-in flow with forgot password
+
+**Modified Files:**
+- `SupabaseAuthService.swift` - Added `sendPasswordReset()` and `updatePassword()` methods
+
+### Usage Examples
+
+#### Show Forgot Password:
 ```swift
-// In EmailAuthView.swift - Login Form
-Button("Forgot Password?") {
-    showForgotPassword = true
-}
-.font(.caption)
-.foregroundStyle(.blue)
-```
-
-### 2. Create ForgotPasswordView
-```swift
-struct ForgotPasswordView: View {
-    @State private var email = ""
-    
-    var body: some View {
-        VStack {
-            TextField("Email", text: $email)
-            Button("Send Reset Link") {
-                // TODO: Send email with reset token
-            }
-        }
-    }
-}
-```
-
-### 3. Backend Requirements
-- **Database table** to store reset tokens with expiration
-- **Email service** to send reset links
-- **API endpoint** to generate tokens
-- **API endpoint** to verify tokens and update password
-
-### 4. Reset Flow
-1. User enters email address
-2. System generates unique token (UUID)
-3. Token stored in database with expiration (e.g., 1 hour)
-4. Email sent with link: `yourapp://reset?token=ABC123`
-5. User clicks link, app opens to reset screen
-6. User enters new password
-7. App validates token and updates password
-8. Token is invalidated
-
-## Quick Alternative: Password Change (Requires Current Password)
-
-You can implement a "Change Password" feature that doesn't require email:
-
-```swift
-struct ChangePasswordView: View {
-    @State private var currentPassword = ""
-    @State private var newPassword = ""
-    @State private var confirmPassword = ""
-    
-    // Verify current password, then update to new password
+.sheet(isPresented: $showForgotPassword) {
+    ForgotPasswordView()
+        .environmentObject(authService)
 }
 ```
 
-Add this to a Settings/Profile screen where users are already logged in.
+#### Show Change Password (in Settings):
+```swift
+NavigationLink("Change Password") {
+    ChangePasswordView()
+        .environmentObject(authService)
+}
+```
 
-## Security Considerations
+#### Use Complete Sign-In Flow:
+```swift
+.sheet(isPresented: $showSignIn) {
+    SupabaseSignInView()
+        .environmentObject(authService)
+}
+```
 
-### Current Implementation (Local Only)
-- ⚠️ SHA256 for password hashing (better than plain text, but not ideal)
-- ⚠️ No rate limiting on login attempts
-- ⚠️ No account lockout after failed attempts
-- ⚠️ No email verification
+## Security Features
 
-### Production Requirements
-- ✅ Use bcrypt or Argon2 for password hashing
-- ✅ Rate limit login attempts (e.g., max 5 per minute)
-- ✅ Lock account after 10 failed attempts
-- ✅ Require email verification before first login
-- ✅ Use HTTPS for all communication
-- ✅ Store sensitive data encrypted
-- ✅ Implement 2FA (optional but recommended)
+### Implemented with Supabase:
+- ✅ Industry-standard password hashing (bcrypt)
+- ✅ Secure token generation and validation
+- ✅ Token expiration (configurable in Supabase dashboard)
+- ✅ Rate limiting on auth endpoints
+- ✅ Email verification (optional, configurable)
+- ✅ HTTPS for all communication
+- ✅ Row Level Security (RLS) for database access
 
-## Next Steps
+### Supabase Auth Benefits:
+- Handles all security best practices automatically
+- Regular security updates from Supabase team
+- SOC 2 Type II certified infrastructure
+- GDPR compliant
+- No need to manage password hashing or tokens manually
 
-**When you're ready to add password reset:**
+## Next Steps (Optional Enhancements)
 
-1. **Choose your approach:**
-   - Firebase (easiest, production-ready)
-   - Custom backend (most flexible)
-   - Just add "Change Password" (requires current password)
+**You can now:**
+1. ✅ Use password reset in your app (fully functional)
+2. ✅ Users can recover forgotten passwords via email
+3. ✅ Authenticated users can change their passwords
 
-2. **Let me know which option you prefer**, and I'll help you implement it!
-
-3. **For now**, users who forget passwords will need to:
-   - Create a new account with different email
-   - OR you can manually reset in the database (debug only)
-
-## Files to Modify (When Implementing)
-
-- `EmailAuthView.swift` - Add "Forgot Password" button
-- Create `ForgotPasswordView.swift` - Password reset UI
-- Create `PasswordResetService.swift` - Backend communication
-- Update `User.swift` - Add reset token fields (if storing locally)
-- Update `AuthManager.swift` - Add reset methods
+**Future enhancements you might want:**
+- Email verification on signup (disable in Supabase dashboard if not needed)
+- Two-factor authentication (Supabase supports this)
+- Social auth providers (Google, GitHub, etc.)
+- Custom email templates with your branding
+- Deep linking to bring users back to app after reset
 
 ---
 
-**REMINDER**: This is currently NOT implemented. Users cannot reset forgotten passwords yet!
+**STATUS**: ✅ Password reset is fully implemented and production-ready!

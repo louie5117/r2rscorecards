@@ -139,6 +139,39 @@ final class SupabaseAuthService: NSObject, ObservableObject {
         isAuthenticated = false
     }
 
+    // MARK: - Password Reset
+
+    /// Sends a password reset email to the user.
+    /// The user will receive an email with a link to reset their password.
+    func sendPasswordReset(email: String) async -> Bool {
+        isLoading = true
+        lastError = nil
+        defer { isLoading = false }
+
+        do {
+            try await supabase.auth.resetPasswordForEmail(email)
+            return true
+        } catch {
+            lastError = error.localizedDescription
+            return false
+        }
+    }
+
+    /// Updates the user's password. Requires an active session.
+    func updatePassword(newPassword: String) async -> Bool {
+        isLoading = true
+        lastError = nil
+        defer { isLoading = false }
+
+        do {
+            try await supabase.auth.update(user: .init(password: newPassword))
+            return true
+        } catch {
+            lastError = error.localizedDescription
+            return false
+        }
+    }
+
     // MARK: - Profile
 
     func fetchProfile() async {

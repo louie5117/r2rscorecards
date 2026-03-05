@@ -50,6 +50,7 @@ final class SyncStatus: ObservableObject {
 @main
 struct r2rscorecardsApp: App {
     @StateObject private var authManager = AuthManager()
+    @StateObject private var supabaseAuth = SupabaseAuthService()
     @StateObject private var syncStatus: SyncStatus
     private static let logger = Logger(subsystem: "PSL.r2rscorecards", category: "Persistence")
     let sharedModelContainer: ModelContainer
@@ -182,6 +183,7 @@ struct r2rscorecardsApp: App {
             if persistenceReady {
                 RootView()
                     .environmentObject(authManager)
+                    .environmentObject(supabaseAuth)
                     .environmentObject(syncStatus)
             } else {
                 StartupFailureView(errorMessage: startupErrorMessage ?? "Unknown error")

@@ -266,3 +266,84 @@ struct SBLiveRoundScore: Codable {
         case submittedAt = "submitted_at"
     }
 }
+// MARK: - Friend Requests
+
+struct SBFriendRequest: Codable, Identifiable {
+    let id: UUID
+    let fromUserId: UUID
+    let toUserId: UUID
+    let status: String  // "pending" | "accepted" | "rejected"
+    let groupId: UUID?  // Optional: if invite is for a specific group
+    let message: String?
+    let createdAt: Date
+    let respondedAt: Date?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case fromUserId  = "from_user_id"
+        case toUserId    = "to_user_id"
+        case status
+        case groupId     = "group_id"
+        case message
+        case createdAt   = "created_at"
+        case respondedAt = "responded_at"
+    }
+}
+
+struct SBFriendRequestInsert: Codable {
+    let fromUserId: UUID
+    let toUserId: UUID
+    let groupId: UUID?
+    let message: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case fromUserId = "from_user_id"
+        case toUserId   = "to_user_id"
+        case groupId    = "group_id"
+        case message
+    }
+}
+
+/// Extended friend request with sender/receiver profile info
+struct SBFriendRequestWithProfiles: Codable, Identifiable {
+    let id: UUID
+    let fromUserId: UUID
+    let toUserId: UUID
+    let status: String
+    let groupId: UUID?
+    let message: String?
+    let createdAt: Date
+    let respondedAt: Date?
+    let fromUserProfile: SBProfile?
+    let toUserProfile: SBProfile?
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case fromUserId      = "from_user_id"
+        case toUserId        = "to_user_id"
+        case status
+        case groupId         = "group_id"
+        case message
+        case createdAt       = "created_at"
+        case respondedAt     = "responded_at"
+        case fromUserProfile = "from_user:profiles!from_user_id(id,display_name,email,region,gender,age_group,created_at,updated_at)"
+        case toUserProfile   = "to_user:profiles!to_user_id(id,display_name,email,region,gender,age_group,created_at,updated_at)"
+    }
+}
+
+// MARK: - Friendships
+
+struct SBFriendship: Codable, Identifiable {
+    let id: UUID
+    let userId: UUID
+    let friendId: UUID
+    let createdAt: Date
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case userId    = "user_id"
+        case friendId  = "friend_id"
+        case createdAt = "created_at"
+    }
+}
+

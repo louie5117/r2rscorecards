@@ -9,6 +9,7 @@ struct FightListView: View {
     @EnvironmentObject private var auth: AuthManager
     @EnvironmentObject private var syncStatus: SyncStatus
     @State private var showSignIn = false
+    @State private var showSettings = false
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var showImportFights = false
@@ -111,7 +112,11 @@ struct FightListView: View {
                 Button { addSampleFight() } label: { Label("Add Fight", systemImage: "plus") }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink(destination: PrivacyFAQView()) { Label("Privacy", systemImage: "hand.raised") }
+                Button {
+                    showSettings = true
+                } label: {
+                    Label("Settings", systemImage: "gearshape.fill")
+                }
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button { showSignIn = true } label: {
@@ -135,6 +140,9 @@ struct FightListView: View {
         .sheet(isPresented: $showSignIn) {
             NavigationStack { SignInView(isPresented: $showSignIn) }
                 .environmentObject(auth)
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
         }
         .sheet(isPresented: $showImportFights) {
             ImportFightsView()
