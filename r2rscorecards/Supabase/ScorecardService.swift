@@ -3,6 +3,7 @@
 // A scorecard is a draft until submitScorecard() is called, which locks it.
 
 import Foundation
+import Combine
 import Supabase
 
 @MainActor
@@ -26,7 +27,8 @@ final class ScorecardService: ObservableObject {
         if let groupId {
             query = query.eq("group_id", value: groupId.uuidString)
         } else {
-            query = query.is("group_id", value: "null")
+            // Filter for NULL group_id (personal scorecards not tied to any group)
+            query = query.filter("group_id", operator: "is", value: "null")
         }
 
         let results: [SBScorecard] = try await query.execute().value

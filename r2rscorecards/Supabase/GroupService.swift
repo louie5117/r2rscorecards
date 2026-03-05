@@ -3,6 +3,7 @@
 // Invite codes are generated server-side by the `generate_invite_code()` SQL function.
 
 import Foundation
+import Combine
 import Supabase
 
 @MainActor

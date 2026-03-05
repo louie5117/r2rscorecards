@@ -2,6 +2,7 @@
 // CRUD operations for the `fights` table.
 
 import Foundation
+import Combine
 import Supabase
 
 @MainActor

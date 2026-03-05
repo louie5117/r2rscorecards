@@ -5,6 +5,7 @@
 // from all group members in real time as they score each round.
 
 import Foundation
+import Combine
 import Supabase
 
 @MainActor

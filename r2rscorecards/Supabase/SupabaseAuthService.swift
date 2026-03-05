@@ -5,6 +5,7 @@
 // Usage: add as a @StateObject in r2rscorecardsApp and pass via .environmentObject()
 
 import Foundation
+import Combine
 import AuthenticationServices
 import Supabase
 
@@ -101,11 +102,10 @@ final class SupabaseAuthService: NSObject, ObservableObject {
                 data: ["full_name": .string(displayName)]
             )
 
-            if let user = response.user {
-                currentUserId = UUID(uuidString: user.id.uuidString)
-                isAuthenticated = true
-                await fetchProfile()
-            }
+            let user = response.user
+            currentUserId = UUID(uuidString: user.id.uuidString)
+            isAuthenticated = true
+            await fetchProfile()
         } catch {
             lastError = error.localizedDescription
         }
