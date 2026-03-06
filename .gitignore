@@ -1,0 +1,45 @@
+# macOS
+.DS_Store
+
+# Xcode user data
+*.xcworkspace/xcuserdata/
+*.xcuserdatad/
+*.xcuserstate
+
+# Xcode build products and caches
+build/
+DerivedData/
+
+# Swift Package Manager
+.build/
+Packages/
+Package.resolved
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build/
+
+# Fastlane output
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output/
+
+# Coverage and test artifacts
+*.xccovreport
+*.xccovarchive
+*.profdata
+*.gcda
+*.gcno
+
+# Playgrounds and temp files
+timeline.xctimeline
+playground.xcworkspace
+
+# Archives
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xcarchive
