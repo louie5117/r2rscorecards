@@ -14,6 +14,7 @@ struct HomeViewEnhanced: View {
     @Query(sort: [SortDescriptor(\Scorecard.createdAt, order: .reverse)]) private var allScorecards: [Scorecard]
     
     @EnvironmentObject private var auth: AuthManager
+    @EnvironmentObject private var supabaseAuth: SupabaseAuthService // ✨ ADD THIS
     @EnvironmentObject private var syncStatus: SyncStatus
     @EnvironmentObject private var themeManager: ThemeManager // ✨ THEME MANAGER
     @State private var showSignIn = false
@@ -21,6 +22,22 @@ struct HomeViewEnhanced: View {
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var showImportFights = false
+    
+    // ✨ FIX: Helper to check if any auth system is authenticated
+    private var isAuthenticated: Bool {
+        auth.currentUserIdentifier != nil || supabaseAuth.isAuthenticated
+    }
+    
+    // ✨ FIX: Get current user ID from either auth system
+    private var currentUserId: String? {
+        if let legacyId = auth.currentUserIdentifier {
+            return legacyId
+        }
+        if let supabaseId = supabaseAuth.currentUserId?.uuidString {
+            return supabaseId
+        }
+        return nil
+    }
     
     var body: some View {
         ZStack {
@@ -192,7 +209,7 @@ struct HomeViewEnhanced: View {
             }
         }
         .navigationDestination(for: Fight.self) { fight in
-            FightDetailView(fight: fight)
+            ImprovedFightDetailView(fight: fight) // ✨ NEW: Solo scoring (groups optional)
         }
     }
     
@@ -205,7 +222,8 @@ struct HomeViewEnhanced: View {
                 Spacer()
             }
             
-            if auth.currentUserIdentifier == nil {
+            // ✨ FIX: Check if authenticated
+            if !isAuthenticated {
                 EmptyStateCard(
                     icon: "person.crop.circle.badge.questionmark",
                     message: "Sign in to track your scorecards",

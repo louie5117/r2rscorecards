@@ -9,7 +9,7 @@ import SwiftUI
 import StoreKit
 
 struct SupportDeveloperView: View {
-    @StateObject private var store = StoreKitManager()
+    @ObservedObject private var store = StoreKitManager.shared
     @Environment(\.dismiss) private var dismiss
     
     @State private var isPurchasing = false

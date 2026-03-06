@@ -4,4 +4,16 @@
    <FileRef
       location = "self:">
    </FileRef>
+   <FileRef
+      location = "group:BUG_FIXES_APPLIED.md">
+   </FileRef>
+   <FileRef
+      location = "group:ImprovedScoringFlow.swift">
+   </FileRef>
+   <FileRef
+      location = "group:OPTIONAL_GROUPS_GUIDE.md">
+   </FileRef>
+   <FileRef
+      location = "group:INTEGRATION_COMPLETE.md">
+   </FileRef>
 </Workspace>

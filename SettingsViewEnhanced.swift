@@ -42,6 +42,7 @@ struct SettingsViewEnhanced: View {
                 scoringSection
                 displaySection
                 notificationSection
+                tipJarSection // ✨ TIP JAR
                 dataPrivacySection
                 aboutSection
             }
@@ -224,6 +225,29 @@ struct SettingsViewEnhanced: View {
             Toggle("Haptic Feedback", isOn: $hapticFeedbackEnabled)
         } header: {
             Text("Notifications & Sounds")
+        }
+    }
+    
+    private var tipJarSection: some View {
+        Section {
+            NavigationLink(destination: TipJarView()) {
+                HStack {
+                    Image(systemName: "heart.fill")
+                        .font(.title3)
+                        .foregroundStyle(.pink)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Support Development")
+                            .font(.headline)
+                        Text("Buy me a coffee and support the app!")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        } header: {
+            Text("❤️ Support")
+        } footer: {
+            Text("This app is free! Tips help me keep it running and add new features.")
         }
     }
     

@@ -107,10 +107,20 @@ struct SupabaseSignInView: View {
                 Text(errorMessage)
             }
             .sheet(isPresented: $showEmailAuth) {
-                SupabaseEmailAuthView(showForgotPassword: $showForgotPassword)
+                // ✨ FIX: Pass dismiss action to child
+                SupabaseEmailAuthView(
+                    showForgotPassword: $showForgotPassword,
+                    parentDismiss: dismiss // ✨ NEW: Pass parent dismiss
+                )
             }
             .sheet(isPresented: $showForgotPassword) {
                 ForgotPasswordView()
+            }
+        }
+        // ✨ FIX: Monitor auth state to auto-dismiss
+        .onChange(of: authService.isAuthenticated) { oldValue, newValue in
+            if newValue {
+                dismiss()
             }
         }
     }
@@ -143,6 +153,7 @@ struct SupabaseEmailAuthView: View {
     @EnvironmentObject private var authService: SupabaseAuthService
     @Environment(\.dismiss) private var dismiss
     @Binding var showForgotPassword: Bool
+    let parentDismiss: DismissAction? // ✨ NEW: Optional parent dismiss
     
     @State private var isRegistering = false
     @State private var email = ""
@@ -332,7 +343,8 @@ struct SupabaseEmailAuthView: View {
         await authService.signIn(email: email.lowercased().trimmingCharacters(in: .whitespaces), password: password)
         
         if authService.isAuthenticated {
-            dismiss()
+            dismiss() // Dismiss this sheet
+            parentDismiss?() // ✨ Also dismiss parent sheet
         } else if let error = authService.lastError {
             errorMessage = error
             showError = true
@@ -343,7 +355,8 @@ struct SupabaseEmailAuthView: View {
         await authService.signUp(email: email.lowercased().trimmingCharacters(in: .whitespaces), password: password, displayName: displayName)
         
         if authService.isAuthenticated {
-            dismiss()
+            dismiss() // Dismiss this sheet
+            parentDismiss?() // ✨ Also dismiss parent sheet
         } else if let error = authService.lastError {
             errorMessage = error
             showError = true
@@ -357,6 +370,6 @@ struct SupabaseEmailAuthView: View {
 }
 
 #Preview("Email Auth") {
-    SupabaseEmailAuthView(showForgotPassword: .constant(false))
+    SupabaseEmailAuthView(showForgotPassword: .constant(false), parentDismiss: nil)
         .environmentObject(SupabaseAuthService())
 }

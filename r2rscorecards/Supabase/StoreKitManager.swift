@@ -47,6 +47,8 @@ enum TipProduct: String, CaseIterable {
 @MainActor
 final class StoreKitManager: ObservableObject {
     
+    static let shared = StoreKitManager()
+    
     @Published var products: [Product] = []
     @Published var purchasedProductIDs: Set<String> = []
     @Published var isLoading = false
@@ -54,7 +56,7 @@ final class StoreKitManager: ObservableObject {
     
     private var updateListenerTask: Task<Void, Error>?
     
-    init() {
+    private init() {
         // Start listening for transaction updates
         updateListenerTask = listenForTransactions()
         

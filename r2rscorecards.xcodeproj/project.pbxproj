@@ -52,6 +52,10 @@
 		B5DDB8EF2F5AD71E001FF6BB /* SettingsViewEnhanced.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DDB8EE2F5AD71E001FF6BB /* SettingsViewEnhanced.swift */; };
 		B5DDB8F12F5AD75C001FF6BB /* ALL_FEATURES_GUIDE.md in Resources */ = {isa = PBXBuildFile; fileRef = B5DDB8F02F5AD75C001FF6BB /* ALL_FEATURES_GUIDE.md */; };
 		B5DDB8F32F5AD897001FF6BB /* ONBOARDING_THEMES_ACTIVE.md in Resources */ = {isa = PBXBuildFile; fileRef = B5DDB8F22F5AD897001FF6BB /* ONBOARDING_THEMES_ACTIVE.md */; };
+		B5DDB8F52F5B6D88001FF6BB /* HOW_TO_ADD_FILE.md in Resources */ = {isa = PBXBuildFile; fileRef = B5DDB8F42F5B6D88001FF6BB /* HOW_TO_ADD_FILE.md */; };
+		B5DDB8F72F5B6E7F001FF6BB /* ImprovedFightDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DDB8F62F5B6E7F001FF6BB /* ImprovedFightDetailView.swift */; };
+		B5DDB8F92F5B7194001FF6BB /* TipJarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DDB8F82F5B7194001FF6BB /* TipJarView.swift */; };
+		B5DDB8FB2F5B71B5001FF6BB /* SIGNIN_TIPJAR_FIXES.md in Resources */ = {isa = PBXBuildFile; fileRef = B5DDB8FA2F5B71B5001FF6BB /* SIGNIN_TIPJAR_FIXES.md */; };
 		B5E5DF212F4D093500DE8E8F /* ScorecardView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E5DF202F4D093500DE8E8F /* ScorecardView 2.swift */; };
 		B5E5DF232F4D0A2E00DE8E8F /* CHANGES_APPLIED.md in Resources */ = {isa = PBXBuildFile; fileRef = B5E5DF222F4D0A2E00DE8E8F /* CHANGES_APPLIED.md */; };
 		B5E5DF252F4D0A3800DE8E8F /* AppErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E5DF242F4D0A3800DE8E8F /* AppErrors.swift */; };
@@ -99,6 +103,10 @@
 		B5DDB8EE2F5AD71E001FF6BB /* SettingsViewEnhanced.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewEnhanced.swift; sourceTree = "<group>"; };
 		B5DDB8F02F5AD75C001FF6BB /* ALL_FEATURES_GUIDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ALL_FEATURES_GUIDE.md; sourceTree = "<group>"; };
 		B5DDB8F22F5AD897001FF6BB /* ONBOARDING_THEMES_ACTIVE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ONBOARDING_THEMES_ACTIVE.md; sourceTree = "<group>"; };
+		B5DDB8F42F5B6D88001FF6BB /* HOW_TO_ADD_FILE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = HOW_TO_ADD_FILE.md; sourceTree = "<group>"; };
+		B5DDB8F62F5B6E7F001FF6BB /* ImprovedFightDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImprovedFightDetailView.swift; sourceTree = "<group>"; };
+		B5DDB8F82F5B7194001FF6BB /* TipJarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipJarView.swift; sourceTree = "<group>"; };
+		B5DDB8FA2F5B71B5001FF6BB /* SIGNIN_TIPJAR_FIXES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SIGNIN_TIPJAR_FIXES.md; sourceTree = "<group>"; };
 		B5E5DF202F4D093500DE8E8F /* ScorecardView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScorecardView 2.swift"; sourceTree = "<group>"; };
 		B5E5DF222F4D0A2E00DE8E8F /* CHANGES_APPLIED.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGES_APPLIED.md; sourceTree = "<group>"; };
 		B5E5DF242F4D0A3800DE8E8F /* AppErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppErrors.swift; sourceTree = "<group>"; };
@@ -192,6 +200,10 @@
 				B5DDB8EE2F5AD71E001FF6BB /* SettingsViewEnhanced.swift */,
 				B5DDB8F02F5AD75C001FF6BB /* ALL_FEATURES_GUIDE.md */,
 				B5DDB8F22F5AD897001FF6BB /* ONBOARDING_THEMES_ACTIVE.md */,
+				B5DDB8F42F5B6D88001FF6BB /* HOW_TO_ADD_FILE.md */,
+				B5DDB8F62F5B6E7F001FF6BB /* ImprovedFightDetailView.swift */,
+				B5DDB8F82F5B7194001FF6BB /* TipJarView.swift */,
+				B5DDB8FA2F5B71B5001FF6BB /* SIGNIN_TIPJAR_FIXES.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -287,6 +299,8 @@
 				B5DDB8DF2F5ACB91001FF6BB /* TROUBLESHOOTING.md in Resources */,
 				B5DDB8F32F5AD897001FF6BB /* ONBOARDING_THEMES_ACTIVE.md in Resources */,
 				B5DDB8D72F5AC955001FF6BB /* QUICK_START_CHECKLIST.md in Resources */,
+				B5DDB8FB2F5B71B5001FF6BB /* SIGNIN_TIPJAR_FIXES.md in Resources */,
+				B5DDB8F52F5B6D88001FF6BB /* HOW_TO_ADD_FILE.md in Resources */,
 				B5A936372F4E1361002D8D27 /* BOXING_API_SETUP.md in Resources */,
 				B5E5DF272F4D0A7700DE8E8F /* DEVELOPER_GUIDE.md in Resources */,
 				B5DDB8E52F5ACECC001FF6BB /* FINAL_CLEANUP_STEPS.md in Resources */,
@@ -332,10 +346,12 @@
 				B51C0A792F48A72E0004F4AE /* RoundScore.swift in Sources */,
 				B5E5DF252F4D0A3800DE8E8F /* AppErrors.swift in Sources */,
 				B5A936332F4E12F6002D8D27 /* BoxingAPIService.swift in Sources */,
+				B5DDB8F92F5B7194001FF6BB /* TipJarView.swift in Sources */,
 				B51C0A8B2F48AB030004F4AE /* SignInView.swift in Sources */,
 				B51C0A832F48A91C0004F4AE /* User.swift in Sources */,
 				B5A9362F2F4E10DC002D8D27 /* GeographicData.swift in Sources */,
 				B51C0A752F48A72B0004F4AE /* FriendGroup.swift in Sources */,
+				B5DDB8F72F5B6E7F001FF6BB /* ImprovedFightDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

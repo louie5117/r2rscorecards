@@ -91,7 +91,7 @@ struct FightListView: View {
 #endif
         }
         .navigationDestination(for: Fight.self) { fight in
-            FightDetailView(fight: fight)
+            ImprovedFightDetailView(fight: fight) // ✨ NEW: Solo scoring (groups optional)
         }
         .navigationTitle("Fights")
         .toolbar {
