@@ -1,0 +1,58 @@
+# Xcode user state / local metadata
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+xcuserdata/
+*.xcworkspace/xcuserdata/
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+# Build outputs
+build/
+DerivedData/
+*.ipa
+*.dSYM
+*.dSYM.zip
+*.xcresult
+*.xccovreport
+*.profdata
+coverage/
+
+# Swift Package Manager local build/cache artifacts
+.build/
+.swiftpm/
+
+# macOS metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Secrets and local environment files
+.env
+.env.*
+*.env
+*.secret
+Secrets.plist
+GoogleService-Info.plist
+*.mobileprovision
+*.p12
+*.cer
+*.key
+AuthKey_*.p8
+
+# Optional fastlane artifacts
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output/
+fastlane/logs/
