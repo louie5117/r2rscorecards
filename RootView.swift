@@ -4,12 +4,17 @@ import SwiftData
 struct RootView: View {
     @EnvironmentObject private var auth: AuthManager
     @EnvironmentObject private var supabaseAuth: SupabaseAuthService
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false // ✨ ONBOARDING CHECK
     @State private var showSignIn = false
     @State private var showAuthChoice = false
 
     var body: some View {
         Group {
-            if auth.currentUserIdentifier == nil && !supabaseAuth.isAuthenticated {
+            // ✨ ONBOARDING FLOW - Shows on first launch
+            if !hasCompletedOnboarding {
+                OnboardingFlow(showAuthChoice: $showAuthChoice)
+                    .environmentObject(supabaseAuth)
+            } else if auth.currentUserIdentifier == nil && !supabaseAuth.isAuthenticated {
                 // Not signed in
                 VStack(spacing: 20) {
                     Image(systemName: "list.number.rectangle.fill")
@@ -43,9 +48,9 @@ struct RootView: View {
                 }
                 .padding()
             } else {
-                // Signed in
+                // Signed in - show new enhanced home
                 NavigationStack {
-                    FightListView()
+                    HomeViewEnhanced()
                 }
             }
         }

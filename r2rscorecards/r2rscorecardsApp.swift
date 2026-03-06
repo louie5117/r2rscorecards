@@ -52,6 +52,7 @@ struct r2rscorecardsApp: App {
     @StateObject private var authManager = AuthManager()
     @StateObject private var supabaseAuth = SupabaseAuthService()
     @StateObject private var syncStatus: SyncStatus
+    @StateObject private var themeManager = ThemeManager() // ✨ THEME MANAGER ACTIVATED
     private static let logger = Logger(subsystem: "PSL.r2rscorecards", category: "Persistence")
     let sharedModelContainer: ModelContainer
     let persistenceReady: Bool
@@ -185,6 +186,8 @@ struct r2rscorecardsApp: App {
                     .environmentObject(authManager)
                     .environmentObject(supabaseAuth)
                     .environmentObject(syncStatus)
+                    .environmentObject(themeManager) // ✨ THEME AVAILABLE EVERYWHERE
+                    .preferredColorScheme(themeManager.currentTheme.colorScheme) // ✨ APPLY THEME
             } else {
                 StartupFailureView(errorMessage: startupErrorMessage ?? "Unknown error")
             }

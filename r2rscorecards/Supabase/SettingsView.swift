@@ -121,6 +121,17 @@ struct SettingsView: View {
                         Label("Privacy & FAQ", systemImage: "hand.raised")
                     }
                     
+                    NavigationLink {
+                        SupportDeveloperView()
+                    } label: {
+                        HStack {
+                            Label("Support the Developer", systemImage: "heart.fill")
+                            Spacer()
+                            Image(systemName: "sparkles")
+                                .foregroundStyle(.pink)
+                        }
+                    }
+                    
                     HStack {
                         Text("Version")
                         Spacer()
