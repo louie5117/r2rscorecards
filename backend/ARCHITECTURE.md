@@ -30,16 +30,20 @@ The backend is built on **Supabase**, an open-source Firebase alternative that p
 
 ```
 backend/
-├── schema.sql           # Core tables, indexes, triggers
-├── rls_policies.sql     # Row Level Security policies
-├── analytics_views.sql  # Pre-built views for analytics and realtime
-└── ARCHITECTURE.md      # This document
+├── schema.sql                   # Core tables, indexes, triggers
+├── rls_policies.sql             # Row Level Security policies
+├── analytics_views.sql          # Pre-built views for analytics and realtime
+├── boxing_index_migration.sql   # Boxer profiles, fight extensions, rankings
+├── boxing_index_views.sql       # Computed stats, fight history, head-to-head views
+└── ARCHITECTURE.md              # This document
 ```
 
 Run files in this order when initializing a new Supabase project:
 1. `schema.sql`
 2. `rls_policies.sql`
 3. `analytics_views.sql`
+4. `boxing_index_migration.sql`
+5. `boxing_index_views.sql`
 
 ---
 
@@ -55,9 +59,47 @@ profiles            ← region, gender, age_group, display_name
     │        │
     │        └──▶ friend_groups ──▶ group_members (many-to-many with profiles)
     │
-    └──▶ fights ◀── scorecards
-                ◀── friend_groups
+    └──▶ fights ◀── scorecards         ◀── boxers (red_boxer_id / blue_boxer_id)
+                ◀── friend_groups      ◀── boxer_rankings
+
+
+boxers              ← name, nationality, record (wins/losses/draws/kos), weight_class
+    │
+    ├──▶ fights (as red_boxer or blue_boxer)
+    └──▶ boxer_rankings ← organization, weight_class, rank, as_of_date
 ```
+
+### Boxing Index Tables (boxing_index_migration.sql)
+
+| Table              | Purpose                                              |
+|--------------------|------------------------------------------------------|
+| `boxers`           | Fighter profiles, physical attributes, career record |
+| `boxer_rankings`   | Snapshot rankings per org/weight class/date          |
+
+### Extended Fights Columns
+
+| Column             | Type                  | Notes                                |
+|--------------------|-----------------------|--------------------------------------|
+| `red_boxer_id`     | UUID → boxers         | Red corner fighter                   |
+| `blue_boxer_id`    | UUID → boxers         | Blue corner fighter                  |
+| `weight_class`     | weight_class enum     | Fight weight class                   |
+| `belts_at_stake`   | TEXT[]                | e.g. `{'WBC','WBA'}`                 |
+| `venue`            | TEXT                  | Arena name                           |
+| `city` / `country` | TEXT                  | Location                             |
+| `result`           | fight_result enum     | red_win/blue_win/draw/no_contest     |
+| `method`           | fight_method enum     | KO/TKO/UD/SD/MD/RTD/DQ              |
+| `method_round`     | INT                   | Round fight ended                    |
+| `broadcast`        | TEXT[]                | e.g. `{'ESPN+','DAZN'}`              |
+
+### Boxing Index Views (boxing_index_views.sql)
+
+| View                       | Purpose                                              |
+|----------------------------|------------------------------------------------------|
+| `boxer_fight_history`      | All fights for any boxer with opponent details       |
+| `boxer_computed_stats`     | Win/loss/KO record derived from fight outcomes       |
+| `head_to_head`             | All fights between two specific boxers               |
+| `upcoming_fights_detail`   | Upcoming feed with full boxer info                   |
+| `current_rankings`         | Latest ranking snapshot per org/weight class         |
 
 ### Key Design Decisions
 
