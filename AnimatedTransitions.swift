@@ -1,6 +1,8 @@
 //
 //  AnimatedTransitions.swift
-//  Smooth animations for the app
+//  r2rscorecards
+//
+//  Created by PSL on 06/03/2026
 //
 
 import SwiftUI

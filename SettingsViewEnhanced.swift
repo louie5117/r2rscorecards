@@ -1,6 +1,8 @@
 //
 //  SettingsViewEnhanced.swift
-//  Comprehensive settings - FIXED VERSION
+//  r2rscorecards
+//
+//  Created by PSL on 06/03/2026
 //
 
 import SwiftUI

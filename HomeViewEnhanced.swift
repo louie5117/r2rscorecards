@@ -1,6 +1,8 @@
 //
 //  HomeViewEnhanced.swift
-//  Clean implementation - NO CONFLICTS
+//  r2rscorecards
+//
+//  Created by PSL on 06/03/2026
 //
 
 import SwiftUI

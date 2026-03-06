@@ -1,10 +1,12 @@
 //
 //  ThemeManager.swift
-//  Centralized theme and personalization management
+//  r2rscorecards
+//
+//  Created by PSL on 06/03/2026
 //
 
 import SwiftUI
-import Combine // ✨ NEEDED FOR ObservableObject
+import Combine
 
 // MARK: - Theme Manager
 
