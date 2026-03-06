@@ -1,0 +1,22 @@
+name: Repo Structure
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  structure-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run repository structure checks
+        shell: bash
+        run: |
+          chmod +x ./scripts/check-structure.sh
+          ./scripts/check-structure.sh

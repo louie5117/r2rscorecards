@@ -2,6 +2,33 @@
 
 A SwiftUI + SwiftData app for creating fights, scoring rounds, and aggregating crowd scores. Supports demographic grouping by region, gender, and age group via a `User` model.
 
+## Documentation
+
+- Documentation index: `docs/README.md`
+- Architecture guide: `docs/architecture/developer-guide.md`
+- Troubleshooting: `docs/runbooks/troubleshooting.md`
+- Unit test TODO backlog: `docs/testing/unit-test-todo.md`
+
+## Testing TODO
+
+Current status:
+- No unit test files are currently present in the repository.
+- No dedicated unit test target is currently configured in the Xcode project.
+
+Priority areas for initial coverage:
+- `SupabaseAuthService`
+- `ScorecardService`
+- `RealtimeService`
+- `FriendRequestService`
+- `GroupService`
+- `FightService`
+- `BoxingAPIService`
+- `BoxerIndexService`
+- `BoxingRules`
+- Core model invariants (`Scorecard`, `RoundScore`, `Boxer`, `User`)
+
+See `docs/testing/unit-test-todo.md` for the phased backlog and placeholder test plan.
+
 ## Development notes
 
 ### Schema changes (SwiftData)
