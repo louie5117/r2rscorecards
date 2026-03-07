@@ -11,7 +11,7 @@ import SwiftData
 
 // MARK: - Enhanced Fight Detail View
 
-struct ImprovedFightDetailView: View {
+struct ScoringFlowFightDetailView: View {
     let fight: Fight
     @Environment(\.modelContext) private var context
     @EnvironmentObject private var auth: AuthManager
@@ -524,7 +524,7 @@ struct GroupRowView: View {
     context.insert(fight)
     
     return NavigationStack {
-        ImprovedFightDetailView(fight: fight)
+        ScoringFlowFightDetailView(fight: fight)
     }
     .environmentObject(AuthManager())
     .environmentObject(SupabaseAuthService())
