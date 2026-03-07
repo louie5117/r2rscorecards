@@ -108,7 +108,7 @@ final class ScorecardService: ObservableObject {
             .execute()
 
         // Keep local state in sync
-        if let idx = currentRoundScores.firstIndex(where: { $0.round == round }) {
+        if currentRoundScores.contains(where: { $0.round == round }) {
             // Replace in-place — refetch to get server-assigned id/scoredAt
             let updated = try await fetchRoundScores(scorecardId: scorecardId)
             currentRoundScores = updated

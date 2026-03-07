@@ -48,7 +48,7 @@ final class BoxingAPIService: ObservableObject {
             
             // Log fight dates for debugging
             for fight in fights.prefix(3) {
-                print("📅 Fight: \(fight.title) on \(fight.date)")
+                print("📅 Fight: \(fight.title ?? "Untitled") on \(fight.date)")
             }
             
             return fights
