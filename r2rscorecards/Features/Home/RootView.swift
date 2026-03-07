@@ -4,6 +4,7 @@ import SwiftData
 struct RootView: View {
     @EnvironmentObject private var auth: AuthManager
     @EnvironmentObject private var supabaseAuth: SupabaseAuthService
+    @EnvironmentObject private var authState: AppAuthState
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false // ✨ ONBOARDING CHECK
     @State private var showSignIn = false
     @State private var showAuthChoice = false
@@ -14,7 +15,7 @@ struct RootView: View {
             if !hasCompletedOnboarding {
                 OnboardingFlow(showAuthChoice: $showAuthChoice)
                     .environmentObject(supabaseAuth)
-            } else if auth.currentUserIdentifier == nil && !supabaseAuth.isAuthenticated {
+            } else if !authState.isAuthenticated {
                 // Not signed in
                 VStack(spacing: 20) {
                     Image(systemName: "list.number.rectangle.fill")
@@ -74,10 +75,12 @@ struct RootView: View {
         RoundScore.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
-
-    RootView()
-        .environmentObject(AuthManager())
-        .environmentObject(SupabaseAuthService())
+    let auth = AuthManager()
+    let supabase = SupabaseAuthService()
+    return RootView()
+        .environmentObject(auth)
+        .environmentObject(supabase)
+        .environmentObject(AppAuthState(legacy: auth, supabase: supabase))
         .environmentObject(SyncStatus(mode: .cloudKit, detail: "Data is syncing with CloudKit."))
         .modelContainer(container)
 }

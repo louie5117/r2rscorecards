@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftUI
 import SwiftData
 
 struct FightListView: View {
@@ -142,7 +141,7 @@ struct FightListView: View {
                 .environmentObject(auth)
         }
         .sheet(isPresented: $showSettings) {
-            SettingsView()
+            SettingsViewEnhanced()
         }
         .sheet(isPresented: $showImportFights) {
             ImportFightsView()

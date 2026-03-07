@@ -56,7 +56,10 @@
 		B5DDB8F72F5B6E7F001FF6BB /* ImprovedFightDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DDB8F62F5B6E7F001FF6BB /* ImprovedFightDetailView.swift */; };
 		B5DDB8F92F5B7194001FF6BB /* TipJarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DDB8F82F5B7194001FF6BB /* TipJarView.swift */; };
 		B5DDB8FB2F5B71B5001FF6BB /* SIGNIN_TIPJAR_FIXES.md in Resources */ = {isa = PBXBuildFile; fileRef = B5DDB8FA2F5B71B5001FF6BB /* SIGNIN_TIPJAR_FIXES.md */; };
-		B5E5DF212F4D093500DE8E8F /* ScorecardView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E5DF202F4D093500DE8E8F /* ScorecardView 2.swift */; };
+		B5E5DF212F4D093500DE8E8F /* ScorecardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E5DF202F4D093500DE8E8F /* ScorecardView.swift */; };
+		B5E5DF292F4D0B0000DE8E8F /* AppAuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E5DF282F4D0B0000DE8E8F /* AppAuthState.swift */; };
+		B5E5DF2C2F4D0B1000DE8E8F /* SyncStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E5DF2B2F4D0B1000DE8E8F /* SyncStatus.swift */; };
+		B5E5DF2E2F4D0B2000DE8E8F /* StartupFailureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E5DF2D2F4D0B2000DE8E8F /* StartupFailureView.swift */; };
 		B5E5DF232F4D0A2E00DE8E8F /* CHANGES_APPLIED.md in Resources */ = {isa = PBXBuildFile; fileRef = B5E5DF222F4D0A2E00DE8E8F /* CHANGES_APPLIED.md */; };
 		B5E5DF252F4D0A3800DE8E8F /* AppErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E5DF242F4D0A3800DE8E8F /* AppErrors.swift */; };
 		B5E5DF272F4D0A7700DE8E8F /* DEVELOPER_GUIDE.md in Resources */ = {isa = PBXBuildFile; fileRef = B5E5DF262F4D0A7700DE8E8F /* DEVELOPER_GUIDE.md */; };
@@ -107,7 +110,10 @@
 		B5DDB8F62F5B6E7F001FF6BB /* ImprovedFightDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecards/Features/Fights/ImprovedFightDetailView.swift; sourceTree = "<group>"; };
 		B5DDB8F82F5B7194001FF6BB /* TipJarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecards/Features/Settings/TipJarView.swift; sourceTree = "<group>"; };
 		B5DDB8FA2F5B71B5001FF6BB /* SIGNIN_TIPJAR_FIXES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = docs/SIGNIN_TIPJAR_FIXES.md; sourceTree = "<group>"; };
-		B5E5DF202F4D093500DE8E8F /* ScorecardView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "r2rscorecards/Features/Scorecards/ScorecardView 2.swift"; sourceTree = "<group>"; };
+		B5E5DF202F4D093500DE8E8F /* ScorecardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "r2rscorecards/Features/Scorecards/ScorecardView.swift"; sourceTree = "<group>"; };
+		B5E5DF282F4D0B0000DE8E8F /* AppAuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecards/Core/Managers/AppAuthState.swift; sourceTree = "<group>"; };
+		B5E5DF2B2F4D0B1000DE8E8F /* SyncStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecards/Core/Managers/SyncStatus.swift; sourceTree = "<group>"; };
+		B5E5DF2D2F4D0B2000DE8E8F /* StartupFailureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecards/Shared/UI/StartupFailureView.swift; sourceTree = "<group>"; };
 		B5E5DF222F4D0A2E00DE8E8F /* CHANGES_APPLIED.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = docs/CHANGES_APPLIED.md; sourceTree = "<group>"; };
 		B5E5DF242F4D0A3800DE8E8F /* AppErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecards/Core/Utilities/AppErrors.swift; sourceTree = "<group>"; };
 		B5E5DF262F4D0A7700DE8E8F /* DEVELOPER_GUIDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = docs/DEVELOPER_GUIDE.md; sourceTree = "<group>"; };
@@ -221,7 +227,7 @@
 			isa = PBXGroup;
 			children = (
 				B5A936262F4DD695002D8D27 /* RoundScoringView.swift */,
-				B5E5DF202F4D093500DE8E8F /* ScorecardView 2.swift */,
+				B5E5DF202F4D093500DE8E8F /* ScorecardView.swift */,
 			);
 			name = Scorecards;
 			sourceTree = "<group>";
@@ -294,7 +300,9 @@
 		C0A1000C2F60000100A0A001 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				B5E5DF282F4D0B0000DE8E8F /* AppAuthState.swift */,
 				B51C0A882F48AAF90004F4AE /* AuthManager.swift */,
+				B5E5DF2B2F4D0B1000DE8E8F /* SyncStatus.swift */,
 				B5DDB8D22F5AC8E4001FF6BB /* ThemeManager.swift */,
 			);
 			name = Managers;
@@ -323,6 +331,7 @@
 			isa = PBXGroup;
 			children = (
 				B5A936302F4E10F3002D8D27 /* GeographicPicker.swift */,
+				B5E5DF2D2F4D0B2000DE8E8F /* StartupFailureView.swift */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -446,11 +455,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				B51C0A7F2F48A8770004F4AE /* FightDetailView.swift in Sources */,
+				B5E5DF292F4D0B0000DE8E8F /* AppAuthState.swift in Sources */,
 				B51C0A892F48AAF90004F4AE /* AuthManager.swift in Sources */,
+				B5E5DF2C2F4D0B1000DE8E8F /* SyncStatus.swift in Sources */,
+				B5E5DF2E2F4D0B2000DE8E8F /* StartupFailureView.swift in Sources */,
 				B5DDB8D32F5AC8E4001FF6BB /* ThemeManager.swift in Sources */,
 				B51C0A872F48AA420004F4AE /* UsersListView.swift in Sources */,
 				B5A936312F4E10F3002D8D27 /* GeographicPicker.swift in Sources */,
-				B5E5DF212F4D093500DE8E8F /* ScorecardView 2.swift in Sources */,
+				B5E5DF212F4D093500DE8E8F /* ScorecardView.swift in Sources */,
 				B5DDB8EB2F5AD6DB001FF6BB /* OnboardingFlow.swift in Sources */,
 				B5A936352F4E130F002D8D27 /* ImportFightsView.swift in Sources */,
 				B5DDB8EF2F5AD71E001FF6BB /* SettingsViewEnhanced.swift in Sources */,

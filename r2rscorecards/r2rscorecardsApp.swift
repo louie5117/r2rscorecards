@@ -8,44 +8,6 @@
 import SwiftUI
 import SwiftData
 import os
-import Combine
-
-enum PersistenceSyncMode {
-    case cloudKit
-    case localFallback
-    case inMemoryRecovery
-}
-
-@MainActor
-final class SyncStatus: ObservableObject {
-    @Published var mode: PersistenceSyncMode
-    @Published var detail: String
-    @Published var lastSyncAttempt: Date
-    @Published var lastError: String?
-
-    init(mode: PersistenceSyncMode, detail: String, lastSyncAttempt: Date = .now, lastError: String? = nil) {
-        self.mode = mode
-        self.detail = detail
-        self.lastSyncAttempt = lastSyncAttempt
-        self.lastError = lastError
-    }
-
-    var title: String {
-        switch mode {
-        case .cloudKit: return "Cloud Sync Enabled"
-        case .localFallback: return "Local-Only Mode"
-        case .inMemoryRecovery: return "Recovery Mode"
-        }
-    }
-
-    var iconName: String {
-        switch mode {
-        case .cloudKit: return "icloud"
-        case .localFallback: return "externaldrive"
-        case .inMemoryRecovery: return "exclamationmark.triangle"
-        }
-    }
-}
 
 @main
 struct r2rscorecardsApp: App {
@@ -182,12 +144,14 @@ struct r2rscorecardsApp: App {
     var body: some Scene {
         WindowGroup {
             if persistenceReady {
-                RootView()
-                    .environmentObject(authManager)
-                    .environmentObject(supabaseAuth)
-                    .environmentObject(syncStatus)
-                    .environmentObject(themeManager) // ✨ THEME AVAILABLE EVERYWHERE
-                    .preferredColorScheme(themeManager.currentTheme.colorScheme) // ✨ APPLY THEME
+                AuthStateProvider(authManager: authManager, supabaseAuth: supabaseAuth) {
+                    RootView()
+                }
+                .environmentObject(authManager)
+                .environmentObject(supabaseAuth)
+                .environmentObject(syncStatus)
+                .environmentObject(themeManager) // ✨ THEME AVAILABLE EVERYWHERE
+                .preferredColorScheme(themeManager.currentTheme.colorScheme) // ✨ APPLY THEME
             } else {
                 StartupFailureView(errorMessage: startupErrorMessage ?? "Unknown error")
             }
@@ -196,26 +160,20 @@ struct r2rscorecardsApp: App {
     }
 }
 
-private struct StartupFailureView: View {
-    let errorMessage: String
+// MARK: - Auth state provider
+
+/// Provides a single auth-state facade to the hierarchy; created once from the two auth services.
+private struct AuthStateProvider<Content: View>: View {
+    @StateObject private var appAuthState: AppAuthState
+    let content: () -> Content
+
+    init(authManager: AuthManager, supabaseAuth: SupabaseAuthService, @ViewBuilder content: @escaping () -> Content) {
+        _appAuthState = StateObject(wrappedValue: AppAuthState(legacy: authManager, supabase: supabaseAuth))
+        self.content = content
+    }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("App Startup Error")
-                        .font(.title.bold())
-                    Text("The app could not create a local data store, so it cannot continue safely.")
-                        .foregroundStyle(.secondary)
-                    Text("Details:")
-                        .font(.headline)
-                    Text(errorMessage)
-                        .font(.footnote.monospaced())
-                        .textSelection(.enabled)
-                }
-                .padding()
-            }
-            .navigationTitle("r2rscorecards")
-        }
+        content()
+            .environmentObject(appAuthState)
     }
 }

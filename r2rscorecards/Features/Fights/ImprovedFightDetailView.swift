@@ -14,14 +14,11 @@ struct ImprovedFightDetailView: View {
     @Environment(\.modelContext) private var context
     @EnvironmentObject private var auth: AuthManager
     @EnvironmentObject private var supabaseAuth: SupabaseAuthService
-    
+    @EnvironmentObject private var authState: AppAuthState
+
     @State private var showScoringOptions = false
     @State private var navigateToScorecard: Scorecard?
-    
-    private var isAuthenticated: Bool {
-        auth.currentUserIdentifier != nil || supabaseAuth.isAuthenticated
-    }
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -156,15 +153,12 @@ struct ImprovedFightDetailView: View {
     // MARK: - Actions
     
     private func startSoloScoring() {
-        guard isAuthenticated else {
+        guard authState.isAuthenticated else {
             // TODO: Show sign in prompt
             return
         }
         
-        // Get user ID
-        guard let userId = auth.currentUserIdentifier ?? supabaseAuth.currentUserId?.uuidString else {
-            return
-        }
+        guard let userId = authState.currentUserId else { return }
         
         // Find or create user in SwiftData
         let fetchDescriptor = FetchDescriptor<User>(predicate: #Predicate { user in
@@ -174,7 +168,7 @@ struct ImprovedFightDetailView: View {
         let existingUsers = (try? context.fetch(fetchDescriptor)) ?? []
         let user = existingUsers.first ?? {
             let newUser = User(
-                displayName: auth.displayName ?? supabaseAuth.currentProfile?.displayName ?? "You",
+                displayName: authState.displayName ?? "You",
                 region: "Unknown",
                 gender: "Unknown",
                 ageGroup: "Unknown"
@@ -237,14 +231,15 @@ struct ImprovedFightDetailView: View {
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     let context = container.mainContext
-    
     let fight = Fight(title: "Fury vs Usyk III", date: .now, scheduledRounds: 12, statusRaw: "upcoming")
     context.insert(fight)
-    
+    let auth = AuthManager()
+    let supabase = SupabaseAuthService()
     return NavigationStack {
         ImprovedFightDetailView(fight: fight)
     }
-    .environmentObject(AuthManager())
-    .environmentObject(SupabaseAuthService())
+    .environmentObject(auth)
+    .environmentObject(supabase)
+    .environmentObject(AppAuthState(legacy: auth, supabase: supabase))
     .modelContainer(container)
 }

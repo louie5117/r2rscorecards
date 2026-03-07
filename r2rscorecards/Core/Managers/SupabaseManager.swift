@@ -13,7 +13,7 @@ enum SupabaseConfig {
     static let url = URL(string: "https://yjxmwktfpzhvinziiuji.supabase.co")!
 
     /// Your project's anon (public) key. Safe to ship in the app —
-    /// Row Level Security policies enforce who can read/write data.
+    /// Row Level Security (RLS) policies enforce who can read/write data. Do not rotate this key without shipping an app update.
     static let anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqeG13a3RmcHpodmluemlpdWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3Mzg3NTUsImV4cCI6MjA4ODMxNDc1NX0.-PN4XAkSPraHvF2sAsIhgrkH1kSwPz7rLDPynyRMIfw"
 }
 
