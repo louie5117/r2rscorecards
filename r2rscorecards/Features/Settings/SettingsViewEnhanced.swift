@@ -10,7 +10,8 @@ import SwiftUI
 struct SettingsViewEnhanced: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var auth: AuthManager
-    @EnvironmentObject private var themeManager: ThemeManager // ✨ THEME MANAGER
+    @EnvironmentObject private var supabaseAuth: SupabaseAuthService
+    @EnvironmentObject private var themeManager: ThemeManager
     
     // Personalization
     @AppStorage("preferredCornerColor") private var preferredCornerColor = "none"
@@ -66,7 +67,7 @@ struct SettingsViewEnhanced: View {
             .alert("Sign Out", isPresented: $showSignOutAlert) {
                 Button("Cancel", role: .cancel) { }
                 Button("Sign Out", role: .destructive) {
-                    // Sign out logic here
+                    signOut()
                 }
             } message: {
                 Text("Are you sure you want to sign out?")
@@ -257,7 +258,7 @@ struct SettingsViewEnhanced: View {
                 Label("Privacy Policy", systemImage: "hand.raised.fill")
             }
             
-            if auth.currentUserIdentifier != nil {
+            if auth.currentUserIdentifier != nil || supabaseAuth.isAuthenticated {
                 Button(role: .destructive) {
                     showSignOutAlert = true
                 } label: {
@@ -313,6 +314,14 @@ struct SettingsViewEnhanced: View {
     
     // MARK: - Actions
     
+    private func signOut() {
+        Task {
+            await supabaseAuth.signOut()
+        }
+        auth.signOut()
+        dismiss()
+    }
+
     private func resetSettings() {
         preferredCornerColor = "none"
         showPunchStats = true
@@ -519,5 +528,6 @@ struct ThemePreviewCard: View {
 #Preview {
     SettingsViewEnhanced()
         .environmentObject(AuthManager())
+        .environmentObject(SupabaseAuthService())
         .environmentObject(ThemeManager())
 }
