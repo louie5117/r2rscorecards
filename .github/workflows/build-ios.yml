@@ -16,6 +16,13 @@ jobs:
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
 
+      - name: Cache DerivedData
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.workspace }}/derived
+          key: xcode-derived-r2r-${{ github.event.pull_request.head.sha || github.sha }}
+
       - name: Build
         run: |
           xcodebuild \
@@ -23,6 +30,7 @@ jobs:
             -scheme r2rscorecards \
             -destination 'generic/platform=iOS' \
             -configuration Debug \
+            -derivedDataPath "${{ runner.workspace }}/derived" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
