@@ -208,7 +208,7 @@ final class FriendRequestService: ObservableObject {
             .execute()
         
         // Refresh pending requests
-        try await fetchPendingRequests(userId: toUserId)
+        _ = try await fetchPendingRequests(userId: toUserId)
     }
     
     /// Reject a friend request
@@ -226,7 +226,7 @@ final class FriendRequestService: ObservableObject {
             .execute()
         
         // Refresh pending requests
-        try await fetchPendingRequests(userId: userId)
+        _ = try await fetchPendingRequests(userId: userId)
     }
     
     /// Cancel a sent friend request
@@ -241,7 +241,7 @@ final class FriendRequestService: ObservableObject {
             .execute()
         
         // Refresh sent requests
-        try await fetchSentRequests(userId: userId)
+        _ = try await fetchSentRequests(userId: userId)
     }
     
     // MARK: - Friends List
@@ -291,7 +291,7 @@ final class FriendRequestService: ObservableObject {
             .execute()
         
         // Refresh friends list
-        try await fetchFriends(userId: userId)
+        _ = try await fetchFriends(userId: userId)
     }
     
     /// Check if two users are friends

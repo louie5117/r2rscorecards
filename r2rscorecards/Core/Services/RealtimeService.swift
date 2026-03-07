@@ -140,7 +140,7 @@ final class RealtimeService: ObservableObject {
     private func handleScorecardUpdate(_ update: UpdateAction) {
         // Check if submitted_at changed to a non-null value
         if let submittedAt = update.record["submitted_at"],
-           case .string(let _) = submittedAt,
+           case .string = submittedAt,
            let userIdValue = update.record["user_id"],
            case .string(let userId) = userIdValue {
             submittedUserIds.insert(userId)
