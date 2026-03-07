@@ -29,6 +29,16 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "B5E600062F4D0C0400DE8E8F"
+               BuildableName = "r2rscorecardsTests.xctest"
+               BlueprintName = "r2rscorecardsTests"
+               ReferencedContainer = "container:r2rscorecards.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
