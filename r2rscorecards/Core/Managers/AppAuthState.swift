@@ -44,6 +44,6 @@ final class AppAuthState: ObservableObject {
         currentUserId = legacyId ?? supabase.currentUserId?.uuidString
         displayName = legacy.displayName
             ?? supabase.currentProfile?.displayName
-            ?? (supabase.currentProfile?.email.flatMap { String($0) })
+            ?? supabase.currentProfile?.email
     }
 }

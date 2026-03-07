@@ -12,8 +12,6 @@ import SwiftData
 struct ImprovedFightDetailView: View {
     let fight: Fight
     @Environment(\.modelContext) private var context
-    @EnvironmentObject private var auth: AuthManager
-    @EnvironmentObject private var supabaseAuth: SupabaseAuthService
     @EnvironmentObject private var authState: AppAuthState
 
     @State private var showScoringOptions = false

@@ -114,7 +114,7 @@ struct HomeViewEnhanced: View {
             Text(greetingMessage)
                 .font(.title.bold())
             
-            if let name = auth.displayName, !name.isEmpty {
+            if let name = authState.displayName, !name.isEmpty {
                 Text("Ready to score some fights, \(name)?")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)

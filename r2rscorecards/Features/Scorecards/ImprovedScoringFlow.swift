@@ -14,8 +14,6 @@ import SwiftData
 struct ScoringFlowFightDetailView: View {
     let fight: Fight
     @Environment(\.modelContext) private var context
-    @EnvironmentObject private var auth: AuthManager
-    @EnvironmentObject private var supabaseAuth: SupabaseAuthService
     @EnvironmentObject private var authState: AppAuthState
     @Query private var groups: [FriendGroup]
     @Query private var scorecards: [Scorecard]

@@ -2,7 +2,6 @@
 // Persistence/sync state for SwiftData + CloudKit. Used by the app root and by views that show sync status.
 
 import Foundation
-import Combine
 
 enum PersistenceSyncMode {
     case cloudKit
