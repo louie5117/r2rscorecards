@@ -2,34 +2,29 @@
 
 [![Build iOS](https://github.com/louie5117/r2rscorecards/actions/workflows/build-ios.yml/badge.svg)](https://github.com/louie5117/r2rscorecards/actions/workflows/build-ios.yml)
 
-A SwiftUI + SwiftData app for creating fights, scoring rounds, and aggregating crowd scores. Supports demographic grouping by region, gender, and age group via a `User` model.
+iPhone app for scoring boxing rounds and aggregating scores—solo or in groups. Built with SwiftUI and SwiftData. Optional CloudKit sync; Supabase for auth and social features.
 
-## Development notes
+## Requirements
 
-### Schema changes (SwiftData)
-This project is under active development and the SwiftData schema evolves. Recent changes include adding a `User` model and a `user` relationship on `Scorecard` (while temporarily keeping `userId`). If you encounter issues running after pulling changes, reset the local SwiftData store.
+- Xcode 16+ (project format 77)
+- iOS 18.0+
+- Apple Developer account for iCloud/CloudKit (optional)
 
-### Resetting local data
-In Debug builds, open the app and use:
-- Developer > Reset Local Store
-- Developer > Seed Sample Data
+## Running the app
 
-These options are available in the Fight list view. Reset clears all local objects. Seed creates a sample fight, two users, and scorecards with random round scores.
+1. Clone the repo and open `r2rscorecards.xcodeproj` in Xcode.
+2. Select the r2rscorecards scheme and a simulator or device.
+3. Build and run (Cmd+R).
 
-### Notes on migration
-- During active development, it’s common to reset the local store instead of performing migrations.
-- Once the schema stabilizes, we can remove `userId` from `Scorecard` and rely solely on the `User` relationship.
-- For production, consider adopting SwiftData migration strategies before shipping.
+SPM will fetch Supabase and other dependencies on first build.
 
-## Cloud sync (SwiftData + CloudKit)
+## Development
 
-This app now prefers a CloudKit-backed SwiftData store and falls back to local-only storage if CloudKit setup is unavailable.
+- **Local data:** In Debug, use **Developer > Reset Local Store** and **Developer > Seed Sample Data** from the Fight list view if the store gets out of sync after schema or code changes.
+- **Schema:** SwiftData schema is still evolving. Resetting the local store is the usual approach during development; proper migrations can be added later for production.
+- **CloudKit (optional):** In Signing & Capabilities, enable iCloud and CloudKit, and set the container to `iCloud.PSL.r2rscorecards`. If CloudKit isn’t set up, the app runs with local-only storage.
+- **Docs:** See the `docs/` folder for setup guides, API notes, and troubleshooting.
 
-### Required Xcode/Apple Developer setup
-- In Signing & Capabilities, ensure `iCloud` is enabled for the app target.
-- Ensure `CloudKit` is enabled under iCloud services.
-- Ensure the container `iCloud.PSL.r2rscorecards` exists in your Apple Developer account and is selected for the target.
+## CI
 
-### Behavior
-- If CloudKit is configured correctly, data syncs across devices for the same Apple ID.
-- If not configured, the app keeps working with local persistence only.
+The **Build iOS** workflow runs on push/PR to `main` or `master` and builds the app on macOS with Xcode 16.2 (no signing). Check the Actions tab for status.
