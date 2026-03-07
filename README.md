@@ -1,6 +1,8 @@
 # R2R Scorecards
 
-[![Build iOS](https://github.com/louie5117/r2rscorecards/actions/workflows/build-ios.yml/badge.svg)](https://github.com/louie5117/r2rscorecards/actions/workflows/build-ios.yml) [![Tests](https://github.com/louie5117/r2rscorecards/actions/workflows/build-ios.yml/badge.svg)](https://github.com/louie5117/r2rscorecards/actions/workflows/build-ios.yml)
+[![Build iOS](https://github.com/louie5117/r2rscorecards/actions/workflows/build-ios.yml/badge.svg)](https://github.com/louie5117/r2rscorecards/actions/workflows/build-ios.yml)
+
+[![Tests](https://github.com/louie5117/r2rscorecards/actions/workflows/build-ios.yml/badge.svg)](https://github.com/louie5117/r2rscorecards/actions/workflows/build-ios.yml)
 
 iPhone app for scoring boxing rounds and aggregating scores—solo or in groups. Built with SwiftUI and SwiftData. Optional CloudKit sync; Supabase for auth and social features.
 
@@ -27,4 +29,4 @@ SPM will fetch Supabase and other dependencies on first build.
 
 ## CI
 
-The **Build iOS** workflow runs on push/PR to `main` or `master`: it builds the app on macOS with Xcode 16.2 (no signing) and runs the unit tests. The **Tests** badge reflects whether the test run passed. Check the Actions tab for details.
+The **Build iOS** workflow runs on push/PR to `main` or `master`: a **build** job compiles the app (macOS, Xcode 16.2, no signing), then a **test** job runs unit tests using that build. Both badges link to the same workflow run; the **Tests** badge reflects whether the test job passed. Check the Actions tab for details.
