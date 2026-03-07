@@ -1,5 +1,7 @@
 # R2R Scorecards
 
+[![Build iOS](https://github.com/louie5117/r2rscorecards/actions/workflows/build-ios.yml/badge.svg)](https://github.com/louie5117/r2rscorecards/actions/workflows/build-ios.yml)
+
 A SwiftUI + SwiftData app for creating fights, scoring rounds, and aggregating crowd scores. Supports demographic grouping by region, gender, and age group via a `User` model.
 
 ## Development notes
