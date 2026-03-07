@@ -389,8 +389,7 @@ struct GroupCreationView: View {
         let group = FriendGroup(
             name: groupName,
             inviteCode: generateInviteCode(),
-            fight: fight,
-            createdBy: auth.displayName ?? "You"
+            fight: fight
         )
         
         context.insert(group)
