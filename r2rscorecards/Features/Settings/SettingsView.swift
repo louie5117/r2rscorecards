@@ -24,6 +24,15 @@ struct SettingsView: View {
             List {
                 // Account Section
                 Section("Account") {
+                    if !(supabaseAuth.isAuthenticated || authManager.currentUserIdentifier != nil) {
+                        HStack {
+                            Image(systemName: "person.crop.circle.badge.questionmark")
+                                .foregroundStyle(.secondary)
+                            Text("You’re not signed in")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    
                     // Current User Info
                     if let displayName = authManager.displayName {
                         HStack {
@@ -62,10 +71,12 @@ struct SettingsView: View {
                     }
                     
                     // Sign Out
-                    Button(role: .destructive) {
-                        showSignOut = true
-                    } label: {
-                        Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
+                    if supabaseAuth.isAuthenticated {
+                        Button(role: .destructive) {
+                            showSignOut = true
+                        } label: {
+                            Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
+                        }
                     }
                 }
                 
@@ -228,3 +239,4 @@ struct SettingsView: View {
         .environmentObject(SyncStatus(mode: .cloudKit, detail: "Data is syncing with CloudKit."))
         .modelContainer(container)
 }
+

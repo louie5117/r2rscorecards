@@ -23,48 +23,46 @@ struct FriendRequestsView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                // Tab Picker
-                Picker("View", selection: $selectedTab) {
-                    ForEach(Tab.allCases, id: \.self) { tab in
-                        Text(tab.rawValue).tag(tab)
+        if !(supabaseAuth.isAuthenticated) {
+            ContentUnavailableView(
+                "Sign-in required",
+                systemImage: "person.crop.circle.badge.exclam",
+                description: Text("Please sign in to use this feature.")
+            )
+        } else {
+            NavigationStack {
+                VStack(spacing: 0) {
+                    // Tab Picker
+                    Picker("View", selection: $selectedTab) {
+                        ForEach(Tab.allCases, id: \.self) { tab in
+                            Text(tab.rawValue).tag(tab)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding()
+                    
+                    // Content
+                    Group {
+                        switch selectedTab {
+                        case .received:
+                            receivedRequestsList
+                        case .sent:
+                            sentRequestsList
+                        case .friends:
+                            friendsList
+                        }
                     }
                 }
-                .pickerStyle(.segmented)
-                .padding()
-                
-                // Content
-                Group {
-                    switch selectedTab {
-                    case .received:
-                        receivedRequestsList
-                    case .sent:
-                        sentRequestsList
-                    case .friends:
-                        friendsList
+                .navigationTitle("Friend Requests")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Done") { dismiss() }
                     }
                 }
-            }
-            .navigationTitle("Friend Requests")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                }
-            }
-            .task {
-                await loadData()
-            }
-            .refreshable {
-                await loadData()
-            }
-            .alert("Friend Request", isPresented: $showAlert) {
-                Button("OK") { }
-            } message: {
-                Text(alertMessage)
+                .task { await loadData() }
+                .refreshable { await loadData() }
+                .alert("Friend Request", isPresented: $showAlert) { Button("OK") { } } message: { Text(alertMessage) }
             }
         }
     }

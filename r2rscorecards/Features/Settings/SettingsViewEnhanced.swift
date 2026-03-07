@@ -139,23 +139,17 @@ struct SettingsViewEnhanced: View {
                 .padding(.vertical, 8)
             } else {
                 HStack {
-                    Image(systemName: "person.crop.circle.badge.plus")
+                    Image(systemName: "person.crop.circle.badge.questionmark")
                         .font(.title2)
-                        .foregroundStyle(.blue)
-                    
+                        .foregroundStyle(.secondary)
                     VStack(alignment: .leading) {
-                        Text("Sign In")
+                        Text("Not Signed In")
                             .font(.headline)
-                        Text("Sync your scorecards")
+                        Text("Sign in appears on app launch")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
-                    
                     Spacer()
-                    
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
                 }
             }
         } header: {
