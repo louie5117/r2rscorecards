@@ -12,6 +12,7 @@ struct SignInView: View {
     @State private var errorMessage = ""
     @State private var showEmailAuth = false
     var onUserCreated: ((User) -> Void)? = nil
+    var onSuccess: (() -> Void)? = nil
 
     var body: some View {
         VStack(spacing: 24) {
@@ -87,7 +88,8 @@ struct SignInView: View {
                 DemographicsPromptView(user: user, isPresented: $showDemographicsPrompt)
                     .onDisappear {
                         if let user = createdUser { onUserCreated?(user) }
-                        isPresented = false
+                        self.onSuccess?()
+                        self.isPresented = false
                     }
             } else {
                 NavigationStack {
@@ -168,7 +170,8 @@ struct SignInView: View {
                 createdUser = user
             }
             // Skip demographics prompt for dev bypass
-            isPresented = false
+            self.onSuccess?()
+            self.isPresented = false
         } catch {
             errorMessage = "Failed to create dev user: \(error.localizedDescription)"
             showError = true

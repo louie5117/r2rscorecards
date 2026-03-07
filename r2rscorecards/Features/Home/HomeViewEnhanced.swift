@@ -17,7 +17,8 @@ struct HomeViewEnhanced: View {
     @EnvironmentObject private var supabaseAuth: SupabaseAuthService // ✨ ADD THIS
     @EnvironmentObject private var syncStatus: SyncStatus
     @EnvironmentObject private var themeManager: ThemeManager // ✨ THEME MANAGER
-    @State private var showSignIn = false
+    @EnvironmentObject private var authUI: AuthUIState
+    
     @State private var showSettings = false
     @State private var showError = false
     @State private var errorMessage = ""
@@ -84,8 +85,12 @@ struct HomeViewEnhanced: View {
                         Image(systemName: "gearshape.fill")
                             .font(.title3)
                     }
-                    
-                    Button(action: { showSignIn = true }) {
+                }
+            }
+            
+            ToolbarItem(placement: .topBarTrailing) {
+                if auth.currentUserIdentifier != nil || supabaseAuth.isAuthenticated {
+                    Button(action: { showSettings = true }) {
                         if let name = auth.displayName, !name.isEmpty {
                             HStack(spacing: 6) {
                                 Image(systemName: "person.crop.circle.fill")
@@ -104,10 +109,6 @@ struct HomeViewEnhanced: View {
                     }
                 }
             }
-        }
-        .sheet(isPresented: $showSignIn) {
-            NavigationStack { SignInView(isPresented: $showSignIn) }
-                .environmentObject(auth)
         }
         .sheet(isPresented: $showSettings) {
             SettingsViewEnhanced()
@@ -229,7 +230,7 @@ struct HomeViewEnhanced: View {
                     message: "Sign in to track your scorecards",
                     actionLabel: "Sign In"
                 ) {
-                    showSignIn = true
+                    authUI.showAuth = true
                 }
             } else if userScorecardCount == 0 {
                 EmptyStateCard(
@@ -520,5 +521,7 @@ struct ScorecardCardDisplay: View {
     .environmentObject(AuthManager())
     .environmentObject(SyncStatus(mode: .cloudKit, detail: "Synced"))
     .environmentObject(ThemeManager()) // ✨ THEME MANAGER
+    .environmentObject(AuthUIState())
     .modelContainer(container)
 }
+

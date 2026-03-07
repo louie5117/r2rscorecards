@@ -187,6 +187,7 @@ struct r2rscorecardsApp: App {
                     .environmentObject(supabaseAuth)
                     .environmentObject(syncStatus)
                     .environmentObject(themeManager) // ✨ THEME AVAILABLE EVERYWHERE
+                    .environmentObject(AuthUIState())
                     .preferredColorScheme(themeManager.currentTheme.colorScheme) // ✨ APPLY THEME
             } else {
                 StartupFailureView(errorMessage: startupErrorMessage ?? "Unknown error")

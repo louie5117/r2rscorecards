@@ -23,67 +23,55 @@ struct UserSearchView: View {
     var groupId: UUID? = nil // Optional: for group invites
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                // Search Results
-                if searchService.isLoading {
-                    ProgressView("Searching...")
-                        .padding()
-                } else if searchQuery.isEmpty {
-                    ContentUnavailableView(
-                        "Search for Users",
-                        systemImage: "magnifyingglass",
-                        description: Text("Enter a name or email address to find users")
-                    )
-                } else if searchService.searchResults.isEmpty {
-                    ContentUnavailableView(
-                        "No Users Found",
-                        systemImage: "person.slash",
-                        description: Text("Try a different search term")
-                    )
-                } else {
-                    List(searchService.searchResults) { user in
-                        UserSearchRow(user: user) {
-                            selectedUser = user
-                            showSendRequest = true
+        if !(supabaseAuth.isAuthenticated) {
+            ContentUnavailableView(
+                "Sign-in required",
+                systemImage: "person.crop.circle.badge.exclam",
+                description: Text("Please sign in to use this feature.")
+            )
+        } else {
+            NavigationStack {
+                VStack {
+                    // Search Results
+                    if searchService.isLoading {
+                        ProgressView("Searching...")
+                            .padding()
+                    } else if searchQuery.isEmpty {
+                        ContentUnavailableView(
+                            "Search for Users",
+                            systemImage: "magnifyingglass",
+                            description: Text("Enter a name or email address to find users")
+                        )
+                    } else if searchService.searchResults.isEmpty {
+                        ContentUnavailableView(
+                            "No Users Found",
+                            systemImage: "person.slash",
+                            description: Text("Try a different search term")
+                        )
+                    } else {
+                        List(searchService.searchResults) { user in
+                            UserSearchRow(user: user) {
+                                selectedUser = user
+                                showSendRequest = true
+                            }
                         }
                     }
                 }
-            }
-            .searchable(text: $searchQuery, prompt: "Search by name or email")
-            .onChange(of: searchQuery) { _, newValue in
-                Task {
-                    await performSearch(newValue)
+                .searchable(text: $searchQuery, prompt: "Search by name or email")
+                .onChange(of: searchQuery) { _, newValue in
+                    Task { await performSearch(newValue) }
                 }
-            }
-            .navigationTitle("Find Users")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Done") {
-                        dismiss()
-                    }
+                .navigationTitle("Find Users")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }
                 }
-            }
-            .alert("Send Friend Request", isPresented: $showSendRequest) {
-                TextField("Message (optional)", text: $requestMessage)
-                Button("Cancel", role: .cancel) {
-                    requestMessage = ""
-                }
-                Button("Send") {
-                    Task {
-                        await sendFriendRequest()
-                    }
-                }
-            } message: {
-                if let user = selectedUser {
-                    Text("Send a friend request to \(user.displayName)?")
-                }
-            }
-            .alert("Friend Request", isPresented: $showAlert) {
-                Button("OK") { }
-            } message: {
-                Text(alertMessage)
+                .alert("Send Friend Request", isPresented: $showSendRequest) {
+                    TextField("Message (optional)", text: $requestMessage)
+                    Button("Cancel", role: .cancel) { requestMessage = "" }
+                    Button("Send") { Task { await sendFriendRequest() } }
+                } message: { if let user = selectedUser { Text("Send a friend request to \(user.displayName)?") } }
+                .alert("Friend Request", isPresented: $showAlert) { Button("OK") { } } message: { Text(alertMessage) }
             }
         }
     }
