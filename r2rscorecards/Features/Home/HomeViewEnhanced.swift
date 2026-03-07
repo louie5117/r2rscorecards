@@ -14,7 +14,8 @@ struct HomeViewEnhanced: View {
     @Query(sort: [SortDescriptor(\Scorecard.createdAt, order: .reverse)]) private var allScorecards: [Scorecard]
     
     @EnvironmentObject private var auth: AuthManager
-    @EnvironmentObject private var supabaseAuth: SupabaseAuthService // ✨ ADD THIS
+    @EnvironmentObject private var supabaseAuth: SupabaseAuthService
+    @EnvironmentObject private var authState: AppAuthState
     @EnvironmentObject private var syncStatus: SyncStatus
     @EnvironmentObject private var themeManager: ThemeManager // ✨ THEME MANAGER
     @EnvironmentObject private var authUI: AuthUIState
@@ -23,23 +24,7 @@ struct HomeViewEnhanced: View {
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var showImportFights = false
-    
-    // ✨ FIX: Helper to check if any auth system is authenticated
-    private var isAuthenticated: Bool {
-        auth.currentUserIdentifier != nil || supabaseAuth.isAuthenticated
-    }
-    
-    // ✨ FIX: Get current user ID from either auth system
-    private var currentUserId: String? {
-        if let legacyId = auth.currentUserIdentifier {
-            return legacyId
-        }
-        if let supabaseId = supabaseAuth.currentUserId?.uuidString {
-            return supabaseId
-        }
-        return nil
-    }
-    
+
     var body: some View {
         ZStack {
             // ✨ THEMED BACKGROUND
@@ -130,7 +115,7 @@ struct HomeViewEnhanced: View {
             Text(greetingMessage)
                 .font(.title.bold())
             
-            if let name = auth.displayName, !name.isEmpty {
+            if let name = authState.displayName, !name.isEmpty {
                 Text("Ready to score some fights, \(name)?")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -223,8 +208,7 @@ struct HomeViewEnhanced: View {
                 Spacer()
             }
             
-            // ✨ FIX: Check if authenticated
-            if !isAuthenticated {
+            if !authState.isAuthenticated {
                 EmptyStateCard(
                     icon: "person.crop.circle.badge.questionmark",
                     message: "Sign in to track your scorecards",
@@ -296,12 +280,12 @@ struct HomeViewEnhanced: View {
     }
     
     private var userScorecardCount: Int {
-        guard let authID = auth.currentUserIdentifier else { return 0 }
+        guard let authID = authState.currentUserId else { return 0 }
         return allScorecards.filter { $0.user?.authUserID == authID }.count
     }
     
     private var recentScorecards: [Scorecard] {
-        guard let authID = auth.currentUserIdentifier else { return [] }
+        guard let authID = authState.currentUserId else { return [] }
         let userCards = allScorecards.filter { $0.user?.authUserID == authID }
         return userCards.sorted { card1, card2 in
             let date1 = card1.submittedAt ?? card1.createdAt ?? .distantPast
@@ -515,10 +499,14 @@ struct ScorecardCardDisplay: View {
     context.insert(fight2)
     context.insert(fight3)
     
+    let auth = AuthManager()
+    let supabase = SupabaseAuthService()
     return NavigationStack {
         HomeViewEnhanced()
     }
-    .environmentObject(AuthManager())
+    .environmentObject(auth)
+    .environmentObject(supabase)
+    .environmentObject(AppAuthState(legacy: auth, supabase: supabase))
     .environmentObject(SyncStatus(mode: .cloudKit, detail: "Synced"))
     .environmentObject(ThemeManager()) // ✨ THEME MANAGER
     .environmentObject(AuthUIState())

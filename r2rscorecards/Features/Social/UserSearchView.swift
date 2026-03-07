@@ -82,7 +82,7 @@ struct UserSearchView: View {
         guard let currentUserId = supabaseAuth.currentUserId else { return }
         
         do {
-            try await searchService.searchUsers(query: query, excludeUserId: currentUserId)
+            _ = try await searchService.searchUsers(query: query, excludeUserId: currentUserId)
         } catch {
             alertMessage = "Search failed: \(error.localizedDescription)"
             showAlert = true

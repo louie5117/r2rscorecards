@@ -6,6 +6,7 @@ struct FightListView: View {
     @Query(sort: [SortDescriptor(\Fight.date, order: .forward)]) private var fights: [Fight]
     
     @EnvironmentObject private var auth: AuthManager
+    @EnvironmentObject private var authState: AppAuthState
     @EnvironmentObject private var syncStatus: SyncStatus
     @EnvironmentObject private var authUI: AuthUIState
     @EnvironmentObject private var supabaseAuth: SupabaseAuthService
@@ -140,7 +141,7 @@ struct FightListView: View {
             }
         }
         .sheet(isPresented: $showSettings) {
-            SettingsView()
+            SettingsViewEnhanced()
         }
         .sheet(isPresented: $showImportFights) {
             ImportFightsView()
@@ -250,23 +251,26 @@ private enum FightListPreviewData {
 }
 
 #Preview {
-    NavigationStack {
+    let auth = AuthManager()
+    let supabase = SupabaseAuthService()
+    return NavigationStack {
         FightListView()
     }
-    .environmentObject(AuthManager())
+    .environmentObject(auth)
+    .environmentObject(AppAuthState(legacy: auth, supabase: supabase))
     .environmentObject(SyncStatus(mode: .cloudKit, detail: "Data is syncing with CloudKit."))
     .environmentObject(AuthUIState())
     .modelContainer(FightListPreviewData.container)
 }
 
 private struct MyScorecardsView: View {
-    @EnvironmentObject private var auth: AuthManager
+    @EnvironmentObject private var authState: AppAuthState
     @Query(sort: [SortDescriptor(\Scorecard.submittedAt, order: .reverse), SortDescriptor(\Scorecard.createdAt, order: .reverse)])
     private var scorecards: [Scorecard]
 
     var body: some View {
         List {
-            if auth.currentUserIdentifier == nil {
+            if !authState.isAuthenticated {
                 Text("Sign in to view your scorecards.")
                     .foregroundStyle(.secondary)
             } else if myCards.isEmpty {
@@ -324,7 +328,7 @@ private struct MyScorecardsView: View {
     }
 
     private var myCards: [Scorecard] {
-        guard let authID = auth.currentUserIdentifier else { return [] }
+        guard let authID = authState.currentUserId else { return [] }
         return scorecards.filter { $0.user?.authUserID == authID }
     }
 }

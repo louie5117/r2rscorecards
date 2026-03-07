@@ -14,32 +14,25 @@ import SwiftData
 struct ImprovedFightDetailFlowView: View {
     let fight: Fight
     @Environment(\.modelContext) private var context
-    @EnvironmentObject private var auth: AuthManager
-    @EnvironmentObject private var supabaseAuth: SupabaseAuthService
+    @EnvironmentObject private var authState: AppAuthState
     @Query private var groups: [FriendGroup]
     @Query private var scorecards: [Scorecard]
-    
+
     @State private var showScoringOptions = false
     @State private var showGroupCreation = false
     @State private var selectedGroup: FriendGroup?
-    
-    private var isAuthenticated: Bool {
-        auth.currentUserIdentifier != nil || supabaseAuth.isAuthenticated
-    }
-    
+
     private var myGroups: [FriendGroup] {
         groups.filter { $0.fight?.id == fight.id }
     }
-    
+
     private var myScorecards: [Scorecard] {
-        guard let userId = auth.currentUserIdentifier ?? supabaseAuth.currentUserId?.uuidString else {
-            return []
-        }
-        return scorecards.filter { 
+        guard let userId = authState.currentUserId else { return [] }
+        return scorecards.filter {
             $0.fight?.id == fight.id && $0.user?.authUserID == userId
         }
     }
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -217,7 +210,7 @@ struct ImprovedFightDetailFlowView: View {
     // MARK: - Actions
     
     private func startSoloScoring() {
-        guard isAuthenticated else {
+        guard authState.isAuthenticated else {
             // Show sign in prompt
             return
         }
@@ -518,15 +511,16 @@ struct GroupRowView: View {
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     let context = container.mainContext
-    
     let fight = Fight(title: "Fury vs Usyk III", date: .now, scheduledRounds: 12, statusRaw: "upcoming")
     context.insert(fight)
-    
+    let auth = AuthManager()
+    let supabase = SupabaseAuthService()
     return NavigationStack {
         ImprovedFightDetailFlowView(fight: fight)
     }
-    .environmentObject(AuthManager())
-    .environmentObject(SupabaseAuthService())
+    .environmentObject(auth)
+    .environmentObject(supabase)
+    .environmentObject(AppAuthState(legacy: auth, supabase: supabase))
     .modelContainer(container)
 }
 

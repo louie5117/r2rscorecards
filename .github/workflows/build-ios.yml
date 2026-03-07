@@ -1,0 +1,68 @@
+name: Build iOS
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+
+      - name: Cache DerivedData
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.workspace }}/derived
+          key: xcode-derived-r2r-${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Build
+        run: |
+          xcodebuild \
+            -project r2rscorecards.xcodeproj \
+            -scheme r2rscorecards \
+            -destination 'generic/platform=iOS' \
+            -configuration Debug \
+            -derivedDataPath "${{ runner.workspace }}/derived" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+        env:
+          DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
+
+  test:
+    needs: build
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+
+      - name: Restore DerivedData from Build
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.workspace }}/derived
+          key: xcode-derived-r2r-${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Test
+        run: |
+          xcodebuild test \
+            -project r2rscorecards.xcodeproj \
+            -scheme r2rscorecards \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -configuration Debug \
+            -derivedDataPath "${{ runner.workspace }}/derived" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+        env:
+          DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer

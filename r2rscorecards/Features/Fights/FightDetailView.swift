@@ -1,7 +1,7 @@
 import SwiftUI
-import SwiftUI
 import SwiftData
 
+// Legacy: main app flow uses ImprovedFightDetailView. This view is kept for GroupResultsView and reference.
 struct FightDetailView: View {
     @Environment(\.modelContext) private var context
     @EnvironmentObject private var auth: AuthManager

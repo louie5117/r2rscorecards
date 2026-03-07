@@ -32,8 +32,9 @@ struct GeographicData {
     static let countries: [Country] = {
         var result: [Country] = []
         
-        // Get all ISO country codes from iOS
-        for code in Locale.isoRegionCodes {
+        // Get all ISO country codes from iOS (Locale.Region.isoRegions on iOS 16+)
+        for region in Locale.Region.isoRegions {
+            let code = region.identifier
             if let name = Locale.current.localizedString(forRegionCode: code) {
                 let hasStates = countriesWithStates.contains(code)
                 result.append(Country(id: code, name: name, hasStates: hasStates))
