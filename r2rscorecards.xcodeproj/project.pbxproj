@@ -118,7 +118,7 @@
 		B5E5DF222F4D0A2E00DE8E8F /* CHANGES_APPLIED.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = docs/CHANGES_APPLIED.md; sourceTree = "<group>"; };
 		B5E5DF242F4D0A3800DE8E8F /* AppErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecards/Core/Utilities/AppErrors.swift; sourceTree = "<group>"; };
 		B5E5DF262F4D0A7700DE8E8F /* DEVELOPER_GUIDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = docs/DEVELOPER_GUIDE.md; sourceTree = "<group>"; };
-		B5E600022F4D0C0100DE8E8F /* r2rscorecardsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecardsTests/r2rscorecardsTests.swift; sourceTree = "<group>"; };
+		B5E600022F4D0C0100DE8E8F /* r2rscorecardsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecardsTests.swift; sourceTree = "<group>"; };
 		B5E600052F4D0C0300DE8E8F /* r2rscorecardsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = r2rscorecardsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
