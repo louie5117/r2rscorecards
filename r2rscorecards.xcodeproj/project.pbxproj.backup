@@ -46,16 +46,6 @@
 		B5E5DF252F4D0A3800DE8E8F /* r2rscorecards/Core/Utilities/AppErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E5DF242F4D0A3800DE8E8F /* r2rscorecards/Core/Utilities/AppErrors.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		B5E6000B2F4D0C0800DE8E8F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B5320E5C2F47ACBC00C2B16F /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = B5320E632F47ACBC00C2B16F;
-			remoteInfo = r2rscorecards;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		B51C0A722F48A7290004F4AE /* r2rscorecards/Core/Models/Fight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecards/Core/Models/Fight.swift; sourceTree = "<group>"; };
 		B51C0A742F48A72B0004F4AE /* r2rscorecards/Core/Models/FriendGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecards/Core/Models/FriendGroup.swift; sourceTree = "<group>"; };
@@ -88,6 +78,7 @@
 		B5DDB8EE2F5AD71E001FF6BB /* r2rscorecards/Features/Settings/SettingsViewEnhanced.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecards/Features/Settings/SettingsViewEnhanced.swift; sourceTree = "<group>"; };
 		B5DDB8F62F5B6E7F001FF6BB /* r2rscorecards/Features/Fights/ImprovedFightDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecards/Features/Fights/ImprovedFightDetailView.swift; sourceTree = "<group>"; };
 		B5DDB8F82F5B7194001FF6BB /* r2rscorecards/Features/Settings/TipJarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecards/Features/Settings/TipJarView.swift; sourceTree = "<group>"; };
+sourceTree = "<group>"; };
 		B5E5DF242F4D0A3800DE8E8F /* r2rscorecards/Core/Utilities/AppErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = r2rscorecards/Core/Utilities/AppErrors.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -133,6 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				B5320E662F47ACBC00C2B16F /* r2rscorecards */,
+				B5E600042F4D0C0300DE8E8F /* r2rscorecardsTests */,
 				B5320E652F47ACBC00C2B16F /* Products */,
 				C0A100012F60000100A0A001 /* Features */,
 				C0A100092F60000100A0A001 /* Core */,
@@ -194,14 +186,6 @@
 				B5DDB8F62F5B6E7F001FF6BB /* r2rscorecards/Features/Fights/ImprovedFightDetailView.swift */,
 			);
 			name = Fights;
-			sourceTree = "<group>";
-		};
-		C0A100042F60000100A0A001 /* Scorecards */ = {
-			isa = PBXGroup;
-			children = (
-				B5A936262F4DD695002D8D27 /* r2rscorecards/Features/Scorecards/RoundScoringView.swift */,
-			);
-			name = Scorecards;
 			sourceTree = "<group>";
 		};
 		C0A100052F60000100A0A001 /* Home */ = {
@@ -339,6 +323,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B5E6000A2F4D0C0900DE8E8F /* Build configuration list for PBXNativeTarget "r2rscorecardsTests" */;
 			buildPhases = (
+				B5E600072F4D0C0500DE8E8F /* Sources */,
+				B5E600082F4D0C0600DE8E8F /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -347,6 +333,7 @@
 			);
 			name = r2rscorecardsTests;
 			productName = r2rscorecardsTests;
+			productReference = B5E600052F4D0C0300DE8E8F /* r2rscorecardsTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -449,6 +436,16 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXContainerItemProxy section */
+		B5E6000B2F4D0C0800DE8E8F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B5320E5C2F47ACBC00C2B16F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B5320E632F47ACBC00C2B16F;
+			remoteInfo = r2rscorecards;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin XCBuildConfiguration section */
 		B5320E732F47ACBD00C2B16F /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -462,7 +459,6 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = r2rscorecards/Info.plist;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -497,7 +493,6 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = r2rscorecards/Info.plist;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -583,6 +578,42 @@
 			};
 			name = Debug;
 		};
+		B5E6000C2F4D0C0A00DE8E8F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = PSL.r2rscorecardsTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/r2rscorecards.app/r2rscorecards";
+			};
+			name = Debug;
+		};
+		B5E6000D2F4D0C0B00DE8E8F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = PSL.r2rscorecardsTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/r2rscorecards.app/r2rscorecards";
+			};
+			name = Release;
+		};
 		B5320E762F47ACBD00C2B16F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -636,42 +667,6 @@
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		B5E6000C2F4D0C0A00DE8E8F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = PSL.r2rscorecardsTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/r2rscorecards.app/r2rscorecards";
-			};
-			name = Debug;
-		};
-		B5E6000D2F4D0C0B00DE8E8F /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = PSL.r2rscorecardsTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/r2rscorecards.app/r2rscorecards";
 			};
 			name = Release;
 		};

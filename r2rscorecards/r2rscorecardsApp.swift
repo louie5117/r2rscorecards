@@ -144,13 +144,15 @@ struct r2rscorecardsApp: App {
     var body: some Scene {
         WindowGroup {
             if persistenceReady {
-                RootView()
-                    .environmentObject(authManager)
-                    .environmentObject(supabaseAuth)
-                    .environmentObject(syncStatus)
-                    .environmentObject(themeManager) // ✨ THEME AVAILABLE EVERYWHERE
-                    .environmentObject(AuthUIState())
-                    .preferredColorScheme(themeManager.currentTheme.colorScheme) // ✨ APPLY THEME
+                AuthStateProvider(authManager: authManager, supabaseAuth: supabaseAuth) {
+                    RootView()
+                        .environmentObject(authManager)
+                        .environmentObject(supabaseAuth)
+                        .environmentObject(syncStatus)
+                        .environmentObject(themeManager) // ✨ THEME AVAILABLE EVERYWHERE
+                        .environmentObject(AuthUIState())
+                        .preferredColorScheme(themeManager.currentTheme.colorScheme) // ✨ APPLY THEME
+                }
             } else {
                 StartupFailureView(errorMessage: startupErrorMessage ?? "Unknown error")
             }
