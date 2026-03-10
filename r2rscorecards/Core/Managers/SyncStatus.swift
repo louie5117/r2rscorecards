@@ -2,6 +2,7 @@
 // Persistence/sync state for SwiftData + CloudKit. Used by the app root and by views that show sync status.
 
 import Foundation
+import Combine
 
 enum PersistenceSyncMode {
     case cloudKit
@@ -9,13 +10,13 @@ enum PersistenceSyncMode {
     case inMemoryRecovery
 }
 
-@MainActor
 final class SyncStatus: ObservableObject {
     @Published var mode: PersistenceSyncMode
     @Published var detail: String
     @Published var lastSyncAttempt: Date
     @Published var lastError: String?
 
+    @MainActor
     init(mode: PersistenceSyncMode, detail: String, lastSyncAttempt: Date = .now, lastError: String? = nil) {
         self.mode = mode
         self.detail = detail

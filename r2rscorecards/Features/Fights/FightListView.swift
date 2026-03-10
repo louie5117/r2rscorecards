@@ -8,7 +8,8 @@ struct FightListView: View {
     @EnvironmentObject private var auth: AuthManager
     @EnvironmentObject private var authState: AppAuthState
     @EnvironmentObject private var syncStatus: SyncStatus
-    @State private var showSignIn = false
+    @EnvironmentObject private var authUI: AuthUIState
+    @EnvironmentObject private var supabaseAuth: SupabaseAuthService
     @State private var showSettings = false
     @State private var showError = false
     @State private var errorMessage = ""
@@ -119,27 +120,25 @@ struct FightListView: View {
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Button { showSignIn = true } label: {
-                    if let name = authState.displayName, !name.isEmpty {
-                        HStack(spacing: 4) {
-                            #if DEBUG
-                            if auth.isDevBypass {
-                                Image(systemName: "hammer.fill")
-                                    .font(.caption)
-                                    .foregroundStyle(.orange)
+                if auth.currentUserIdentifier != nil || supabaseAuth.isAuthenticated {
+                    Button { showSettings = true } label: {
+                        if let name = auth.displayName, !name.isEmpty {
+                            HStack(spacing: 4) {
+                                #if DEBUG
+                                if auth.isDevBypass {
+                                    Image(systemName: "hammer.fill")
+                                        .font(.caption)
+                                        .foregroundStyle(.orange)
+                                }
+                                #endif
+                                Label(name, systemImage: "person.crop.circle")
                             }
-                            #endif
-                            Label(name, systemImage: "person.crop.circle")
+                        } else {
+                            Label("Profile", systemImage: "person.crop.circle")
                         }
-                    } else {
-                        Label("Profile", systemImage: "person.crop.circle")
                     }
                 }
             }
-        }
-        .sheet(isPresented: $showSignIn) {
-            NavigationStack { SignInView(isPresented: $showSignIn) }
-                .environmentObject(auth)
         }
         .sheet(isPresented: $showSettings) {
             SettingsViewEnhanced()
@@ -260,6 +259,7 @@ private enum FightListPreviewData {
     .environmentObject(auth)
     .environmentObject(AppAuthState(legacy: auth, supabase: supabase))
     .environmentObject(SyncStatus(mode: .cloudKit, detail: "Data is syncing with CloudKit."))
+    .environmentObject(AuthUIState())
     .modelContainer(FightListPreviewData.container)
 }
 

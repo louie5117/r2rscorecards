@@ -9,7 +9,10 @@
 import Foundation
 import Combine
 
-/// Service for fetching boxing fight data from Boxing Data API
+/// Feature flag to gate RapidAPI usage while migrating away
+let USE_RAPID_API: Bool = false
+
+@available(*, deprecated, message: "Deprecated: Replaced by ESPNFightService via FightSource. Remove RapidAPI usage.")
 @MainActor
 final class BoxingAPIService: ObservableObject {
     
@@ -498,3 +501,4 @@ extension BoxingAPIService {
     }
 }
 #endif
+
