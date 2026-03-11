@@ -1,23 +1,20 @@
-Content is user-generated and unverified.
 """
 Boxing API Scraper
 ==================
-Scrapes boxer profiles, fight records, and upcoming schedules
-from public sources and pushes data into your Supabase database.
-
+Pulls boxer profiles, fight history, and upcoming schedules from the
+Boxing Data API (RapidAPI) and upserts into your Supabase database.
+"""
 
 import os
-import time
 import logging
-from datetime import datetime, date
+from datetime import datetime
 from typing import Optional
 
 import requests
-from bs4 import BeautifulSoup
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
-# ── Config ─────────────────────────────────────────────────────────────────
+# ── Config ────────────────────────────────────────────────────────────────────
 load_dotenv()
 
 logging.basicConfig(
@@ -28,45 +25,58 @@ log = logging.getLogger(__name__)
 
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 SUPABASE_KEY = os.environ["SUPABASE_SERVICE_KEY"]
+RAPIDAPI_KEY = os.environ.get("RAPIDAPI_KEY", "")
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/122.0.0.0 Safari/537.36"
-    )
+API_BASE     = "https://boxing-data-api.p.rapidapi.com/v1"
+API_HEADERS  = {
+    "x-rapidapi-key":  RAPIDAPI_KEY,
+    "x-rapidapi-host": "boxing-data-api.p.rapidapi.com",
 }
 
-# ── Supabase client ─────────────────────────────────────────────────────────
+# ── Supabase client ───────────────────────────────────────────────────────────
 def get_supabase() -> Client:
     return create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
-# ── Helpers ─────────────────────────────────────────────────────────────────
-def safe_get(url: str, delay: float = 1.5) -> Optional[BeautifulSoup]:
-    """Fetch a URL and return a BeautifulSoup object, or None on failure."""
-    try:
-        time.sleep(delay)  # polite crawl delay
-        resp = requests.get(url, headers=HEADERS, timeout=15)
-        resp.raise_for_status()
-        return BeautifulSoup(resp.text, "lxml")
-    except Exception as e:
-        log.warning(f"Failed to fetch {url}: {e}")
-        return None
+# ── API helper ────────────────────────────────────────────────────────────────
+def api_get(path: str, params: dict = None) -> list:
+    """GET a Boxing Data API endpoint, paginating through all results."""
+    if not RAPIDAPI_KEY:
+        log.warning("RAPIDAPI_KEY not set")
+        return []
 
+    results = []
+    page = 1
+    page_size = 100
 
-def parse_date(raw: str) -> Optional[str]:
-    """Try common date formats, return ISO string or None."""
-    for fmt in ("%d %B %Y", "%B %d, %Y", "%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y"):
+    while True:
+        p = {"page_num": page, "page_size": page_size, **(params or {})}
         try:
-            return datetime.strptime(raw.strip(), fmt).strftime("%Y-%m-%d")
-        except ValueError:
-            continue
-    return None
+            resp = requests.get(
+                f"{API_BASE}{path}",
+                headers=API_HEADERS,
+                params=p,
+                timeout=15,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+        except Exception as e:
+            log.warning(f"API request failed ({path}): {e}")
+            break
+
+        if not data or not isinstance(data, list):
+            break
+
+        results.extend(data)
+        if len(data) < page_size:
+            break
+        page += 1
+
+    return results
 
 
+# ── Supabase helpers ──────────────────────────────────────────────────────────
 def upsert_boxer_record(sb: Client, boxer_id: str, record: dict) -> None:
-    """Insert or update a boxer_records row."""
     existing = (
         sb.table("boxer_records")
         .select("id")
@@ -80,234 +90,229 @@ def upsert_boxer_record(sb: Client, boxer_id: str, record: dict) -> None:
         sb.table("boxer_records").insert(record).execute()
 
 
-# ── Wikipedia boxer scraper ─────────────────────────────────────────────────
-def scrape_boxer_from_wikipedia(wikipedia_url: str, sb: Client) -> Optional[str]:
-    """
-    Scrape a boxer's profile page from Wikipedia and upsert into Supabase.
-    Returns the boxer UUID if successful, None otherwise.
-
-    Example URL: https://en.wikipedia.org/wiki/Anthony_Joshua
-    """
-    log.info(f"Scraping boxer: {wikipedia_url}")
-    soup = safe_get(wikipedia_url)
-    if not soup:
-        return None
-
-    infobox = soup.find("table", class_="infobox")
-    if not infobox:
-        log.warning("No infobox found — page may not be a boxer article")
-        return None
-
-    def get_field(label: str) -> Optional[str]:
-        for row in infobox.find_all("tr"):
-            th = row.find("th")
-            td = row.find("td")
-            if th and td and label.lower() in th.get_text(strip=True).lower():
-                return td.get_text(separator=" ", strip=True)
-        return None
-
-    full_name = soup.find("h1", id="firstHeading")
-    full_name = full_name.get_text(strip=True) if full_name else "Unknown"
-
-    # Parse record string like "87-3-1 (57 KOs)"
-    record_raw = get_field("Total fights") or get_field("Record") or ""
-    wins = losses = draws = kos = 0
-    import re
-    m = re.search(r"(\d+)[–\-](\d+)[–\-](\d+)", record_raw)
-    if m:
-        wins, losses, draws = int(m.group(1)), int(m.group(2)), int(m.group(3))
-    ko_m = re.search(r"(\d+)\s*KO", record_raw, re.IGNORECASE)
-    if ko_m:
-        kos = int(ko_m.group(1))
-
-    boxer_data = {
-        "full_name":     full_name,
-        "nickname":      get_field("Nickname"),
-        "nationality":   get_field("Nationality") or get_field("Born"),
-        "date_of_birth": parse_date(get_field("Born") or ""),
-        "weight_class":  get_field("Weight"),
-        "stance":        get_field("Stance"),
-        "source_url":    wikipedia_url,
-    }
-    # Remove None values so Supabase doesn't complain
-    boxer_data = {k: v for k, v in boxer_data.items() if v is not None}
-
-    # Upsert boxer (match on full_name as natural key)
-    existing = (
-        sb.table("boxers")
-        .select("id")
-        .eq("full_name", full_name)
-        .execute()
-    )
-    if existing.data:
-        boxer_id = existing.data[0]["id"]
-        sb.table("boxers").update(boxer_data).eq("id", boxer_id).execute()
-        log.info(f"Updated boxer: {full_name} ({boxer_id})")
-    else:
-        result = sb.table("boxers").insert(boxer_data).execute()
-        boxer_id = result.data[0]["id"]
-        log.info(f"Inserted boxer: {full_name} ({boxer_id})")
-
-    # Upsert record
-    upsert_boxer_record(sb, boxer_id, {
-        "wins":        wins,
-        "losses":      losses,
-        "draws":       draws,
-        "wins_by_ko":  kos,
-        "updated_at":  datetime.utcnow().isoformat(),
-    })
-
+def resolve_boxer_id(sb: Client, full_name: str, name_cache: dict) -> Optional[str]:
+    """Look up a boxer's Supabase UUID by full name, using a local cache."""
+    if full_name in name_cache:
+        return name_cache[full_name]
+    match = sb.table("boxers").select("id").ilike("full_name", full_name).execute()
+    boxer_id = match.data[0]["id"] if match.data else None
+    if boxer_id:
+        name_cache[full_name] = boxer_id
     return boxer_id
 
 
-# ── Wikipedia fight table scraper ────────────────────────────────────────────
-def scrape_fight_history_from_wikipedia(wikipedia_url: str, boxer_id: str, sb: Client) -> int:
-    """
-    Scrape the professional boxing record table from a Wikipedia boxer page
-    and insert fights into the fights table.
-    Returns the number of fights inserted.
-    """
-    log.info(f"Scraping fight history for boxer {boxer_id}")
-    soup = safe_get(wikipedia_url)
-    if not soup:
-        return 0
+def broadcast_str(broadcasters: list) -> Optional[str]:
+    """Flatten [{Country: Network}, ...] to a comma-separated string."""
+    all_bc = []
+    for bc in broadcasters:
+        if isinstance(bc, dict):
+            all_bc.extend(bc.values())
+        elif isinstance(bc, str):
+            all_bc.append(bc)
+    return ", ".join(all_bc) if all_bc else None
 
-    # Wikipedia boxing records are in a wikitable with headers like Res., Record, Opponent, etc.
-    tables = soup.find_all("table", class_="wikitable")
-    inserted = 0
 
-    for table in tables:
-        headers = [th.get_text(strip=True).lower() for th in table.find_all("th")]
-        if not any(h in headers for h in ["res.", "res", "result", "opponent"]):
+# ── 1. Fighters ───────────────────────────────────────────────────────────────
+def fetch_fighters(sb: Client) -> dict:
+    """
+    Pull all fighters from the API, upsert into boxers + boxer_records.
+    Returns a cache of {full_name: supabase_uuid} for use by fight fetchers.
+    """
+    log.info("Fetching fighters from Boxing Data API…")
+    fighters = api_get("/fighters/")
+    log.info(f"  {len(fighters)} fighters retrieved")
+
+    name_cache = {}
+    inserted = updated = 0
+
+    for f in fighters:
+        full_name = f.get("name")
+        if not full_name:
             continue
 
-        for row in table.find_all("tr")[1:]:
-            cells = [td.get_text(separator=" ", strip=True) for td in row.find_all("td")]
-            if len(cells) < 4:
-                continue
-            try:
-                result_raw = cells[0].upper()
-                # Normalise result
-                if "WIN" in result_raw or result_raw == "W":
-                    result_flag = "win"
-                elif "LOSS" in result_raw or result_raw in ("L", "LO"):
-                    result_flag = "loss"
-                else:
-                    result_flag = "draw_nc"
+        boxer_data = {"full_name": full_name}
+        for src, dst in [
+            ("nickname",    "nickname"),
+            ("nationality", "nationality"),
+            ("stance",      "stance"),
+            ("height_cm",   "height_cm"),
+            ("reach_cm",    "reach_cm"),
+        ]:
+            val = f.get(src)
+            if val and str(val).strip() not in ("", "-", "null"):
+                boxer_data[dst] = val
 
-                opponent_name = cells[2] if len(cells) > 2 else None
-                method        = cells[3] if len(cells) > 3 else None
-                round_raw     = cells[4] if len(cells) > 4 else None
-                time_raw      = cells[5] if len(cells) > 5 else None
-                date_raw      = cells[6] if len(cells) > 6 else None
-                location_raw  = cells[7] if len(cells) > 7 else None
+        division = f.get("division") or {}
+        if division.get("name"):
+            boxer_data["weight_class"] = division["name"]
 
-                fight_date = parse_date(date_raw or "")
-
-                # Find or skip opponent boxer
-                opponent_id = None
-                if opponent_name:
-                    opp = (
-                        sb.table("boxers")
-                        .select("id")
-                        .eq("full_name", opponent_name)
-                        .execute()
-                    )
-                    if opp.data:
-                        opponent_id = opp.data[0]["id"]
-
-                fight_row = {
-                    "date":         fight_date or "1900-01-01",
-                    "boxer_a_id":   boxer_id,
-                    "boxer_b_id":   opponent_id,
-                    "result":       method,
-                    "result_round": int(round_raw) if round_raw and round_raw.isdigit() else None,
-                    "result_time":  time_raw,
-                    "location":     location_raw,
-                    "winner_id":    boxer_id if result_flag == "win" else (opponent_id if result_flag == "loss" else None),
-                    "source_url":   wikipedia_url,
-                }
-                fight_row = {k: v for k, v in fight_row.items() if v is not None}
-                sb.table("fights").insert(fight_row).execute()
+        try:
+            existing = sb.table("boxers").select("id").eq("full_name", full_name).execute()
+            if existing.data:
+                boxer_id = existing.data[0]["id"]
+                sb.table("boxers").update(boxer_data).eq("id", boxer_id).execute()
+                updated += 1
+            else:
+                result = sb.table("boxers").insert(boxer_data).execute()
+                boxer_id = result.data[0]["id"]
                 inserted += 1
 
-            except Exception as e:
-                log.debug(f"Skipping row due to parse error: {e}")
-                continue
+            name_cache[full_name] = boxer_id
 
-    log.info(f"Inserted {inserted} historical fights")
-    return inserted
-
-
-# ── Upcoming schedule scraper (BBC Sport / Sky Sports) ───────────────────────
-def scrape_upcoming_schedule_sky(sb: Client) -> int:
-    """
-    Scrape upcoming boxing schedule from Sky Sports boxing news.
-    Returns number of scheduled fights inserted.
-    """
-    url = "https://www.skysports.com/boxing/schedule"
-    log.info(f"Scraping schedule from: {url}")
-    soup = safe_get(url)
-    if not soup:
-        return 0
-
-    inserted = 0
-    # Sky Sports renders schedule as a list of fight cards
-    cards = soup.find_all("div", class_=lambda c: c and "fixture" in c.lower())
-
-    for card in cards:
-        try:
-            fighters = card.find_all(class_=lambda c: c and "team" in c.lower())
-            if len(fighters) < 2:
-                continue
-
-            boxer_a = fighters[0].get_text(strip=True)
-            boxer_b = fighters[1].get_text(strip=True)
-            date_el = card.find(class_=lambda c: c and "date" in c.lower())
-            date_str = parse_date(date_el.get_text(strip=True)) if date_el else None
-            venue_el = card.find(class_=lambda c: c and "venue" in c.lower())
-
-            row = {
-                "scheduled_date": date_str or date.today().isoformat(),
-                "status":         "confirmed",
-                "source_url":     url,
-            }
-            if venue_el:
-                row["venue"] = venue_el.get_text(strip=True)
-
-            # Try to link to existing boxer records
-            for name, field in [(boxer_a, "boxer_a_id"), (boxer_b, "boxer_b_id")]:
-                match = sb.table("boxers").select("id").ilike("full_name", f"%{name}%").execute()
-                if match.data:
-                    row[field] = match.data[0]["id"]
-
-            sb.table("scheduled_fights").insert(row).execute()
-            inserted += 1
-            log.info(f"Scheduled: {boxer_a} vs {boxer_b} on {date_str}")
+            stats = f.get("stats") or {}
+            upsert_boxer_record(sb, boxer_id, {
+                "wins":       stats.get("wins", 0),
+                "losses":     stats.get("losses", 0),
+                "draws":      stats.get("draws", 0),
+                "updated_at": datetime.utcnow().isoformat(),
+            })
 
         except Exception as e:
-            log.debug(f"Skipping schedule row: {e}")
+            log.debug(f"Skipping fighter {full_name}: {e}")
+
+    log.info(f"Fighters done — {inserted} inserted, {updated} updated")
+    return name_cache
+
+
+# ── 2. Historical fights ──────────────────────────────────────────────────────
+def fetch_fight_history(sb: Client, name_cache: dict) -> int:
+    """
+    Pull all finished fights from the API and insert into the fights table.
+    Returns number of fights inserted.
+    """
+    log.info("Fetching historical fights from Boxing Data API…")
+    fights = api_get("/fights/", {"status": "FINISHED"})
+    log.info(f"  {len(fights)} finished fights retrieved")
+
+    inserted = 0
+
+    for fight in fights:
+        try:
+            fighters   = fight.get("fighters", {})
+            f1         = fighters.get("fighter_1", {})
+            f2         = fighters.get("fighter_2", {})
+            name_a     = f1.get("full_name")
+            name_b     = f2.get("full_name")
+            if not name_a or not name_b:
+                continue
+
+            raw_date = fight.get("date", "")
+            date_str = raw_date[:10] if raw_date else None
+            if not date_str:
+                continue
+
+            boxer_a_id = resolve_boxer_id(sb, name_a, name_cache)
+            boxer_b_id = resolve_boxer_id(sb, name_b, name_cache)
+
+            winner_id = None
+            if f1.get("winner") and boxer_a_id:
+                winner_id = boxer_a_id
+            elif f2.get("winner") and boxer_b_id:
+                winner_id = boxer_b_id
+
+            results      = fight.get("results") or {}
+            division     = fight.get("division") or {}
+            titles       = fight.get("titles") or []
+            event        = fight.get("event") or {}
+            broadcasters = event.get("broadcasters", [])
+
+            fight_row = {
+                "date":          date_str,
+                "result":        results.get("outcome"),
+                "result_round":  results.get("round"),
+                "weight_class":  division.get("name"),
+                "title_fought":  titles[0]["name"] if titles else None,
+                "venue":         fight.get("venue"),
+                "location":      fight.get("location"),
+                "notes":         fight.get("title"),
+                "source_url":    f"{API_BASE}/fights/",
+            }
+            if boxer_a_id:
+                fight_row["boxer_a_id"] = boxer_a_id
+            if boxer_b_id:
+                fight_row["boxer_b_id"] = boxer_b_id
+            if winner_id:
+                fight_row["winner_id"] = winner_id
+
+            bc = broadcast_str(broadcasters)
+            if bc:
+                fight_row["promoter"] = bc  # closest available column
+
+            fight_row = {k: v for k, v in fight_row.items() if v is not None}
+            sb.table("fights").insert(fight_row).execute()
+            inserted += 1
+
+        except Exception as e:
+            log.debug(f"Skipping fight: {e}")
             continue
 
-    log.info(f"Inserted {inserted} scheduled fights")
+    log.info(f"Historical fights done — {inserted} inserted")
     return inserted
 
 
-# ── Manual data entry helpers ────────────────────────────────────────────────
-def add_boxer_manually(sb: Client, data: dict) -> str:
+# ── 3. Upcoming schedule ──────────────────────────────────────────────────────
+def fetch_upcoming_schedule(sb: Client, name_cache: dict) -> int:
     """
-    Insert a boxer manually.
+    Pull all upcoming fights from the API and insert into scheduled_fights.
+    Returns number inserted.
+    """
+    log.info("Fetching upcoming fights from Boxing Data API…")
+    fights = api_get("/fights/", {"status": "NOT_STARTED"})
+    log.info(f"  {len(fights)} upcoming fights retrieved")
 
-    Example:
-        add_boxer_manually(sb, {
-            "full_name": "Tyson Fury",
-            "nickname": "The Gypsy King",
-            "nationality": "British",
-            "date_of_birth": "1988-08-12",
-            "weight_class": "Heavyweight",
-            "stance": "Orthodox",
-        })
-    """
+    inserted = 0
+
+    for fight in fights:
+        try:
+            fighters = fight.get("fighters", {})
+            name_a   = fighters.get("fighter_1", {}).get("full_name")
+            name_b   = fighters.get("fighter_2", {}).get("full_name")
+            if not name_a or not name_b:
+                continue
+
+            raw_date = fight.get("date", "")
+            date_str = raw_date[:10] if raw_date else None
+            if not date_str:
+                continue
+
+            division     = fight.get("division") or {}
+            titles       = fight.get("titles") or []
+            event        = fight.get("event") or {}
+            broadcasters = event.get("broadcasters", [])
+
+            row_data = {
+                "scheduled_date": date_str,
+                "status":         "confirmed",
+                "weight_class":   division.get("name"),
+                "title_fought":   titles[0]["name"] if titles else None,
+                "venue":          fight.get("venue"),
+                "location":       fight.get("location"),
+                "broadcast":      broadcast_str(broadcasters),
+                "source_url":     f"{API_BASE}/fights/",
+            }
+
+            boxer_a_id = resolve_boxer_id(sb, name_a, name_cache)
+            boxer_b_id = resolve_boxer_id(sb, name_b, name_cache)
+            if boxer_a_id:
+                row_data["boxer_a_id"] = boxer_a_id
+            if boxer_b_id:
+                row_data["boxer_b_id"] = boxer_b_id
+
+            row_data = {k: v for k, v in row_data.items() if v is not None}
+            sb.table("scheduled_fights").insert(row_data).execute()
+            inserted += 1
+            log.info(f"Scheduled: {name_a} vs {name_b} on {date_str}")
+
+        except Exception as e:
+            log.debug(f"Skipping upcoming fight: {e}")
+            continue
+
+    log.info(f"Upcoming schedule done — {inserted} inserted")
+    return inserted
+
+
+# ── Manual helpers ────────────────────────────────────────────────────────────
+def add_boxer_manually(sb: Client, data: dict) -> str:
     result = sb.table("boxers").insert(data).execute()
     boxer_id = result.data[0]["id"]
     log.info(f"Manually inserted boxer: {data['full_name']} ({boxer_id})")
@@ -315,51 +320,27 @@ def add_boxer_manually(sb: Client, data: dict) -> str:
 
 
 def add_scheduled_fight_manually(sb: Client, data: dict) -> str:
-    """
-    Insert a scheduled fight manually.
-
-    Example:
-        add_scheduled_fight_manually(sb, {
-            "scheduled_date": "2025-04-12",
-            "boxer_a_id": "<uuid>",
-            "boxer_b_id": "<uuid>",
-            "title_fought": "IBF Heavyweight",
-            "venue": "Wembley Stadium",
-            "location": "London, UK",
-            "broadcast": "Sky Sports",
-            "status": "confirmed",
-        })
-    """
     result = sb.table("scheduled_fights").insert(data).execute()
     fight_id = result.data[0]["id"]
     log.info(f"Manually inserted scheduled fight: {fight_id}")
     return fight_id
 
 
-# ── Main entrypoint ──────────────────────────────────────────────────────────
+# ── Main ──────────────────────────────────────────────────────────────────────
 def main():
     sb = get_supabase()
     log.info("Connected to Supabase ✓")
 
-    # ── Example: scrape a batch of boxers from Wikipedia ──
-    boxer_wikipedia_pages = [
-        "https://en.wikipedia.org/wiki/Anthony_Joshua",
-        "https://en.wikipedia.org/wiki/Tyson_Fury",
-        "https://en.wikipedia.org/wiki/Oleksandr_Usyk",
-        "https://en.wikipedia.org/wiki/Deontay_Wilder",
-        "https://en.wikipedia.org/wiki/Joe_Joyce_(boxer)",
-    ]
+    # Step 1: load all fighters — builds the name→id cache used by steps 2 & 3
+    name_cache = fetch_fighters(sb)
 
-    for url in boxer_wikipedia_pages:
-        boxer_id = scrape_boxer_from_wikipedia(url, sb)
-        if boxer_id:
-            scrape_fight_history_from_wikipedia(url, boxer_id, sb)
-        time.sleep(2)
+    # Step 2: historical fight results
+    fetch_fight_history(sb, name_cache)
 
-    # ── Scrape upcoming schedule ──
-    scrape_upcoming_schedule_sky(sb)
+    # Step 3: upcoming schedule
+    fetch_upcoming_schedule(sb, name_cache)
 
-    log.info("Scrape complete ✓")
+    log.info("Sync complete ✓")
 
 
 if __name__ == "__main__":
